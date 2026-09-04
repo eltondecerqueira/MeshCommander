@@ -1,0 +1,20 @@
+{
+  "domains": {
+    "": {
+      "showModernUIToggle": true,
+      "customFiles": {
+        "mesh-modern-v1": {
+          "css": [
+            "mesh-modern-v1.css"
+          ],
+          "js": [
+            "mesh-modern-v1.js"
+          ],
+          "scope": [
+            "default3"
+          ]
+        }
+      }
+    }
+  }
+}
