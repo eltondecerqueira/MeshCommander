@@ -4,10 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-function die(message) {
-    console.error('\nERROR: ' + message + '\n');
-    process.exit(1);
-}
+function die(message) { console.error('\nERROR: ' + message + '\n'); process.exit(1); }
 function warn(message) { console.warn('AVISO: ' + message); }
 function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
 function readText(file) { try { return fs.readFileSync(file, 'utf8'); } catch (e) { return null; } }
@@ -23,45 +20,15 @@ function atomicWrite(file, content) {
     fs.writeFileSync(tmp, content, 'utf8');
     fs.renameSync(tmp, file);
 }
-function injectBeforeHeadEnd(source, tag) {
+function injectHead(source, tag) {
     if (source.includes('</head>')) return source.replace('</head>', '    ' + tag + '\n</head>');
     if (source.includes('<body')) return source.replace('<body', tag + '\n<body');
-    die('Nao foi possivel localizar um ponto seguro para inserir CSS em default3.handlebars. Nada foi alterado.');
+    die('Nao foi possivel localizar ponto seguro para inserir CSS. Nada foi alterado.');
 }
-function injectBeforeBodyEnd(source, tag) {
+function injectBody(source, tag) {
     if (source.includes('</body>')) return source.replace('</body>', '    ' + tag + '\n</body>');
     if (source.includes('</html>')) return source.replace('</html>', tag + '\n</html>');
     return source + '\n' + tag + '\n';
-}
-function injectTemplate(source) {
-    let output = source;
-
-    const baseMarker = 'data-mesh-modern-v1="1"';
-    const baseCss = '<link rel="stylesheet" href="styles/mesh-modern-v1.css" data-mesh-modern-v1="1">';
-    const baseJs = '<script src="scripts/mesh-modern-v1.js" data-mesh-modern-v1="1"></script>';
-    if (!output.includes(baseMarker)) {
-        output = injectBeforeHeadEnd(output, baseCss);
-        output = injectBeforeBodyEnd(output, baseJs);
-    }
-
-    const v6Marker = 'data-mesh-modern-v6="1"';
-    const v6Css = '<link rel="stylesheet" href="styles/mesh-modern-native-v6.css" data-mesh-modern-v6="1">';
-    const v6Js = '<script src="scripts/mesh-modern-native-v6.js" data-mesh-modern-v6="1"></script>';
-    if (!output.includes(v6Marker)) {
-        output = injectBeforeHeadEnd(output, v6Css);
-        output = injectBeforeBodyEnd(output, v6Js);
-    }
-
-    const expected = [
-        'styles/mesh-modern-v1.css',
-        'scripts/mesh-modern-v1.js',
-        'styles/mesh-modern-native-v6.css',
-        'scripts/mesh-modern-native-v6.js'
-    ];
-    expected.forEach(function (item) {
-        if (!output.includes(item)) die('Validacao interna falhou ao injetar ' + item + '. Nada foi alterado.');
-    });
-    return output;
 }
 
 const args = process.argv.slice(2);
@@ -69,129 +36,105 @@ const dryRun = args.includes('--dry-run');
 const rootArg = args.find(x => !x.startsWith('-'));
 if (!rootArg || args.includes('-h') || args.includes('--help')) {
     console.log('Uso: node install.js /caminho/raiz-do-meshcentral [--dry-run]');
-    console.log('');
-    console.log('V6 mantem o Command Center V5 e adiciona skin para ferramentas nativas embutidas.');
-    console.log('Valida JS antes de escrever, cria backups e usa gravacao atomica.');
-    console.log('Nao altera config.json, nao altera node_modules e nao reinicia MeshCentral.');
+    console.log('V7 = shell V5 + skin nativa V6 + dashboard/service desk V7.');
+    console.log('Nao altera config.json, node_modules nem reinicia MeshCentral.');
     process.exit(rootArg ? 0 : 1);
 }
 
 const root = path.resolve(rootArg);
 const packageDir = path.join(root, 'node_modules', 'meshcentral');
-const packagePublic = path.join(packageDir, 'public');
 const packageViews = path.join(packageDir, 'views');
+const packagePublic = path.join(packageDir, 'public');
 const packageJson = path.join(packageDir, 'package.json');
 const meshcentralJs = path.join(packageDir, 'meshcentral.js');
 const packageDefault3 = path.join(packageViews, 'default3.handlebars');
 
 if (!fs.existsSync(packageDir)) die('node_modules/meshcentral nao encontrado em: ' + root);
-if (!fs.existsSync(packagePublic)) die('public do MeshCentral nao encontrado: ' + packagePublic);
-if (!fs.existsSync(packageViews)) die('views do MeshCentral nao encontrado: ' + packageViews);
-if (!fs.existsSync(packageDefault3)) die('default3.handlebars nao encontrado. Esta instalacao nao possui a UI Modern esperada.');
-if (!fs.existsSync(meshcentralJs)) die('meshcentral.js nao encontrado: ' + meshcentralJs);
+if (!fs.existsSync(packageViews) || !fs.existsSync(packagePublic)) die('Estrutura public/views do MeshCentral nao encontrada.');
+if (!fs.existsSync(packageDefault3)) die('default3.handlebars nao encontrado.');
+if (!fs.existsSync(meshcentralJs)) die('meshcentral.js nao encontrado.');
 
 let version = 'desconhecida';
-if (fs.existsSync(packageJson)) {
-    try { version = JSON.parse(fs.readFileSync(packageJson, 'utf8')).version || version; }
-    catch (e) { warn('Nao foi possivel ler a versao em package.json.'); }
-}
-
-const meshcentralText = readText(meshcentralJs);
-if (!meshcentralText) die('Nao foi possivel ler meshcentral.js.');
-const hasViewsOverride = meshcentralText.includes('meshcentral-web/views') || meshcentralText.includes("'../../meshcentral-web/views'") || meshcentralText.includes('webViewsOverridePath');
-const hasPublicOverride = meshcentralText.includes('meshcentral-web/public') || meshcentralText.includes("'../../meshcentral-web/public'") || meshcentralText.includes('webPublicOverridePath');
-if (!hasViewsOverride || !hasPublicOverride) die('Esta versao do MeshCentral (' + version + ') nao expoe o mecanismo meshcentral-web/views + public esperado. Nada foi alterado.');
+try { version = JSON.parse(fs.readFileSync(packageJson, 'utf8')).version || version; } catch (e) { warn('Nao foi possivel ler package.json.'); }
+const core = readText(meshcentralJs) || '';
+const hasViewsOverride = core.includes('meshcentral-web/views') || core.includes('webViewsOverridePath');
+const hasPublicOverride = core.includes('meshcentral-web/public') || core.includes('webPublicOverridePath');
+if (!hasViewsOverride || !hasPublicOverride) die('MeshCentral ' + version + ' nao expoe meshcentral-web/views + public.');
 
 const sourceRoot = __dirname;
-const baseCssSource = path.join(sourceRoot, 'public', 'styles', 'mesh-modern-v1.css');
-const baseJsSource = path.join(sourceRoot, 'public', 'scripts', 'mesh-modern-v1.js');
-const v6CssSource = path.join(sourceRoot, 'public', 'styles', 'mesh-modern-native-v6.css');
-const v6JsSource = path.join(sourceRoot, 'public', 'scripts', 'mesh-modern-native-v6.js');
-[baseCssSource, baseJsSource, v6CssSource, v6JsSource].forEach(function (file) {
-    if (!fs.existsSync(file)) die('Asset da UI nao encontrado: ' + file);
+const assets = [
+    { key:'base-css', kind:'css', rel:'styles/mesh-modern-v1.css', marker:'data-mesh-modern-v1="1"', tag:'<link rel="stylesheet" href="styles/mesh-modern-v1.css" data-mesh-modern-v1="1">', min:500 },
+    { key:'base-js', kind:'js', rel:'scripts/mesh-modern-v1.js', marker:'data-mesh-modern-v1="1"', tag:'<script src="scripts/mesh-modern-v1.js" data-mesh-modern-v1="1"></script>', min:1000 },
+    { key:'v6-css', kind:'css', rel:'styles/mesh-modern-native-v6.css', marker:'data-mesh-modern-v6="1"', tag:'<link rel="stylesheet" href="styles/mesh-modern-native-v6.css" data-mesh-modern-v6="1">', min:1000 },
+    { key:'v6-js', kind:'js', rel:'scripts/mesh-modern-native-v6.js', marker:'data-mesh-modern-v6="1"', tag:'<script src="scripts/mesh-modern-native-v6.js" data-mesh-modern-v6="1"></script>', min:1000 },
+    { key:'v7-css', kind:'css', rel:'styles/mesh-commandcenter-v7.css', marker:'data-mesh-modern-v7="1"', tag:'<link rel="stylesheet" href="styles/mesh-commandcenter-v7.css" data-mesh-modern-v7="1">', min:1000 },
+    { key:'v7-js', kind:'js', rel:'scripts/mesh-commandcenter-v7.js', marker:'data-mesh-modern-v7="1"', tag:'<script src="scripts/mesh-commandcenter-v7.js" data-mesh-modern-v7="1"></script>', min:1000 }
+];
+
+assets.forEach(a => {
+    a.source = path.join(sourceRoot, 'public', a.rel);
+    if (!fs.existsSync(a.source)) die('Asset nao encontrado: ' + a.source);
+    a.text = readText(a.source);
+    if (!a.text || a.text.length < a.min) die('Asset vazio/incompleto: ' + a.rel);
+    if (a.kind === 'js') {
+        try { new Function(a.text); } catch (e) { die('Erro de sintaxe em ' + a.rel + ': ' + e.message); }
+    }
 });
+if (!assets.find(a => a.key === 'base-js').text.includes("var VERSION = 'v5'")) warn('Base JS nao declara v5.');
+if (!assets.find(a => a.key === 'v6-js').text.includes("var VERSION = 'v6'")) warn('JS V6 nao declara v6.');
+if (!assets.find(a => a.key === 'v7-js').text.includes("var VERSION = 'v7'")) warn('JS V7 nao declara v7.');
 
-const baseCssText = readText(baseCssSource);
-const baseJsText = readText(baseJsSource);
-const v6CssText = readText(v6CssSource);
-const v6JsText = readText(v6JsSource);
-if (!baseCssText || baseCssText.length < 500) die('CSS base parece vazio ou incompleto. Nada foi alterado.');
-if (!baseJsText || baseJsText.length < 1000) die('JavaScript base parece vazio ou incompleto. Nada foi alterado.');
-if (!v6CssText || v6CssText.length < 1000) die('CSS V6 parece vazio ou incompleto. Nada foi alterado.');
-if (!v6JsText || v6JsText.length < 1000) die('JavaScript V6 parece vazio ou incompleto. Nada foi alterado.');
-try { new Function(baseJsText); } catch (e) { die('JavaScript base possui erro de sintaxe: ' + e.message + '. Nada foi alterado.'); }
-try { new Function(v6JsText); } catch (e) { die('JavaScript V6 possui erro de sintaxe: ' + e.message + '. Nada foi alterado.'); }
-if (!baseJsText.includes("var VERSION = 'v5'")) warn('O JavaScript base nao declara VERSION v5.');
-if (!v6JsText.includes("var VERSION = 'v6'")) warn('O JavaScript adicional nao declara VERSION v6.');
-
-const overrideWebRoot = path.join(root, 'meshcentral-web');
-const overrideViews = path.join(overrideWebRoot, 'views');
-const overridePublic = path.join(overrideWebRoot, 'public');
+const overrideRoot = path.join(root, 'meshcentral-web');
+const overrideViews = path.join(overrideRoot, 'views');
+const overridePublic = path.join(overrideRoot, 'public');
 const stylesDir = path.join(overridePublic, 'styles');
 const scriptsDir = path.join(overridePublic, 'scripts');
-const default3Target = path.join(overrideViews, 'default3.handlebars');
-const baseCssTarget = path.join(stylesDir, 'mesh-modern-v1.css');
-const baseJsTarget = path.join(scriptsDir, 'mesh-modern-v1.js');
-const v6CssTarget = path.join(stylesDir, 'mesh-modern-native-v6.css');
-const v6JsTarget = path.join(scriptsDir, 'mesh-modern-native-v6.js');
-const overrideWasPresent = fs.existsSync(default3Target) && fs.existsSync(baseCssTarget) && fs.existsSync(baseJsTarget);
+const templateTarget = path.join(overrideViews, 'default3.handlebars');
+const overrideWasPresent = fs.existsSync(templateTarget);
 
-const existingOverride = readText(default3Target);
-const templateSource = existingOverride || readText(packageDefault3);
-if (!templateSource) die('Nao foi possivel ler default3.handlebars.');
-const patchedTemplate = injectTemplate(templateSource);
+assets.forEach(a => { a.target = path.join(overridePublic, a.rel); });
+let template = readText(templateTarget) || readText(packageDefault3);
+if (!template) die('Nao foi possivel ler default3.handlebars.');
+
+// Inject CSS in dependency order, then JavaScript in dependency order.
+assets.filter(a => a.kind === 'css').forEach(a => { if (!template.includes(a.marker)) template = injectHead(template, a.tag); });
+assets.filter(a => a.kind === 'js').forEach(a => { if (!template.includes(a.marker)) template = injectBody(template, a.tag); });
+assets.forEach(a => { if (!template.includes(a.rel)) die('Falha ao validar injecao de ' + a.rel); });
 
 console.log('');
-console.log('MeshCentral Modern UI V6 - preflight OK');
+console.log('MeshCentral Modern UI V7 - preflight OK');
 console.log('Versao MeshCentral: ' + version);
 console.log('Raiz:               ' + root);
 console.log('Override ja ativo:  ' + (overrideWasPresent ? 'sim' : 'nao'));
-console.log('JS base:            sintaxe OK');
-console.log('JS V6:              sintaxe OK');
-console.log('CSS V6:             arquivo presente');
-console.log('Template V6:        injecao validada');
+console.log('JS V5/V6/V7:        sintaxe OK');
+console.log('CSS V5/V6/V7:       presente');
+console.log('Template V7:        injecao validada');
 if (dryRun) {
     console.log('Modo dry-run: nenhum arquivo foi alterado.');
     process.exit(0);
 }
 
-ensureDir(overrideViews);
-ensureDir(stylesDir);
-ensureDir(scriptsDir);
-const backups = [
-    ['template', backupIfExists(default3Target)],
-    ['css-base', backupIfExists(baseCssTarget)],
-    ['js-base', backupIfExists(baseJsTarget)],
-    ['css-v6', backupIfExists(v6CssTarget)],
-    ['js-v6', backupIfExists(v6JsTarget)]
-];
-
-atomicWrite(baseCssTarget, baseCssText);
-atomicWrite(baseJsTarget, baseJsText);
-atomicWrite(v6CssTarget, v6CssText);
-atomicWrite(v6JsTarget, v6JsText);
-atomicWrite(default3Target, patchedTemplate);
+ensureDir(overrideViews); ensureDir(stylesDir); ensureDir(scriptsDir);
+const backups = [['template', backupIfExists(templateTarget)]];
+assets.forEach(a => backups.push([a.key, backupIfExists(a.target)]));
+assets.forEach(a => atomicWrite(a.target, a.text));
+atomicWrite(templateTarget, template);
 
 console.log('');
-console.log('MeshCentral Modern UI V6 - override atualizado com sucesso');
-console.log('Modern override:    ' + default3Target);
-console.log('CSS base:           ' + baseCssTarget);
-console.log('JS base:            ' + baseJsTarget);
-console.log('CSS V6:             ' + v6CssTarget);
-console.log('JS V6:              ' + v6JsTarget);
-backups.forEach(function (b) { if (b[1]) console.log('Backup ' + b[0] + ':      ' + b[1]); });
+console.log('MeshCentral Modern UI V7 - atualizado com sucesso');
+console.log('Modern override:    ' + templateTarget);
+assets.forEach(a => console.log((a.key + ':').padEnd(20) + a.target));
+backups.forEach(b => { if (b[1]) console.log(('Backup ' + b[0] + ':').padEnd(20) + b[1]); });
 console.log('');
 console.log('Nenhum arquivo dentro de node_modules foi alterado.');
-console.log('O config.json nao foi alterado.');
-console.log('Classic permanece original.');
-console.log('V5 continua sendo o shell estrutural; V6 moderniza o conteudo nativo embutido.');
+console.log('O config.json nao foi alterado. Classic permanece original.');
+console.log('V5 continua sendo o workspace; V6 moderniza ferramentas nativas; V7 adiciona top-nav, dashboards e Automation Lab.');
 console.log('');
 if (overrideWasPresent) {
-    console.log('Como meshcentral-web ja estava ativo, NAO reinicie o servidor por esta atualizacao.');
-    console.log('No navegador use F12 > Network > Disable cache e Ctrl+Shift+R.');
+    console.log('NAO reinicie o servidor por esta atualizacao. Use Ctrl+Shift+R com cache desabilitado.');
 } else {
-    console.log('Primeira ativacao do meshcentral-web detectada. Um unico restart controlado pode ser necessario.');
+    console.log('Primeira ativacao do meshcentral-web: um restart controlado pode ser necessario.');
 }
-console.log('Rollback imediato: UI Settings -> Classic.');
-console.log('Rollback para V5: execute o install.js da branch feature/meshcentral-modern-ui-v5.');
+console.log('Rollback V7 -> V6: execute o install.js da branch feature/meshcentral-modern-ui-v6.');
+console.log('Rollback total: UI Settings -> Classic.');
 console.log('');
