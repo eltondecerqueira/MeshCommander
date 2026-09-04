@@ -1,0 +1,162 @@
+/* MeshCommander / MeshCentral Modern UI V8 — stabilization + unified device workspace */
+:root{
+  --m8-bg:#0f1722;
+  --m8-bg-soft:#131d2a;
+  --m8-surface:#182432;
+  --m8-surface-2:#1c2938;
+  --m8-surface-3:#223143;
+  --m8-border:#2d3d50;
+  --m8-border-soft:#263648;
+  --m8-text:#e8eef6;
+  --m8-muted:#9aaabd;
+  --m8-muted-2:#7f91a6;
+  --m8-primary:#6ea8fe;
+  --m8-primary-soft:#284b73;
+  --m8-green:#69c89a;
+  --m8-amber:#d7b665;
+  --m8-red:#d77b83;
+  --m8-shadow:0 16px 38px rgba(0,0,0,.20);
+  --m8-font:"Segoe UI Variable Text","Segoe UI Variable","Segoe UI",Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+html[data-mc-modern-overlay="v8"] #mcmV5Shell,
+html[data-mc-modern-overlay="v8"] #mcmV5Shell button,
+html[data-mc-modern-overlay="v8"] #mcmV5Shell input,
+html[data-mc-modern-overlay="v8"] #mcmV5Shell select,
+html[data-mc-modern-overlay="v8"] #mcmV5Shell textarea{
+  font-family:var(--m8-font)!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* Softer global palette. */
+html[data-mc-modern-overlay="v8"] #mcmV5Shell{background:var(--m8-bg)!important;color:var(--m8-text)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-app,
+html[data-mc-modern-overlay="v8"] .mcm5-main{background:linear-gradient(180deg,var(--m8-bg) 0%,#121b27 100%)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-topbar{background:#131d2a!important;border-color:var(--m8-border-soft)!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-primary-nav button{color:#aab8c8!important;font-size:12px!important;font-weight:600!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-primary-nav button:hover{background:#1d2a39!important;color:#edf3f9!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-primary-nav button.active{background:#263a50!important;color:#dcecff!important;box-shadow:inset 0 -2px 0 var(--m8-primary)!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-header-brand b{font-size:14px!important;font-weight:650!important;letter-spacing:-.01em;}
+html[data-mc-modern-overlay="v8"] .mcm7-header-brand small{color:var(--m8-muted-2)!important;font-size:10px!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-mark{background:#345c86!important;color:#dcecff!important;box-shadow:none!important;}
+
+html[data-mc-modern-overlay="v8"] .mcm7-card,
+html[data-mc-modern-overlay="v8"] .mcm7-kpi,
+html[data-mc-modern-overlay="v8"] .mcm5-devicepane,
+html[data-mc-modern-overlay="v8"] .mcm5-detailpane,
+html[data-mc-modern-overlay="v8"] .mcm5-remote-card,
+html[data-mc-modern-overlay="v8"] .mcm5-info-card,
+html[data-mc-modern-overlay="v8"] .mcm5-toolview,
+html[data-mc-modern-overlay="v8"] .mcm5-section-frame{
+  background:var(--m8-surface)!important;
+  border-color:var(--m8-border)!important;
+  box-shadow:none!important;
+}
+html[data-mc-modern-overlay="v8"] .mcm7-pagehead h1,
+html[data-mc-modern-overlay="v8"] .mcm5-pagehead h1{font-size:24px!important;font-weight:650!important;letter-spacing:-.025em!important;color:#edf3fa!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-pagehead p,
+html[data-mc-modern-overlay="v8"] .mcm5-pagehead p{font-size:12px!important;color:var(--m8-muted)!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-kpi strong{font-size:26px!important;font-weight:650!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-kpi b{font-size:11px!important;color:#c6d2df!important;}
+html[data-mc-modern-overlay="v8"] .mcm7-kpi small{font-size:10px!important;color:var(--m8-muted-2)!important;}
+
+/* Device page readable density. */
+html[data-mc-modern-overlay="v8"] .mcm5-device-row{min-height:44px!important;font-size:11px!important;background:var(--m8-surface)!important;border-color:var(--m8-border-soft)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-device-row:hover{background:#202f40!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-device-row.active{background:#29425d!important;box-shadow:inset 3px 0 0 var(--m8-primary)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-dev-name b{font-size:11px!important;font-weight:600!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-dev-name small{font-size:9px!important;color:var(--m8-muted-2)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-listhead{font-size:9px!important;color:var(--m8-muted)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-status,
+html[data-mc-modern-overlay="v8"] .mcm5-ip{font-size:10px!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-devicehead h2{font-size:18px!important;font-weight:650!important;letter-spacing:-.015em!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-devicehead p{font-size:10px!important;color:var(--m8-muted)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-detailtabs button{font-size:10.5px!important;color:#a4b3c4!important;padding:9px 11px!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-detailtabs button.active{color:#dbeafe!important;background:#2a4058!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-cardhead b{font-size:11px!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-cardhead small{font-size:9px!important;color:var(--m8-muted-2)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-info-card dl>div,
+html[data-mc-modern-overlay="v8"] .mcm5-health>div{font-size:10px!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-btn{font-size:10.5px!important;border-color:#385069!important;background:#223143!important;color:#dce6f0!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-btn:hover{background:#2a3b4e!important;border-color:#496581!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-btn.primary{background:#416f9e!important;border-color:#5c8ebe!important;box-shadow:none!important;}
+
+/* Search becomes a first-class command palette. */
+.mcm8-search-host{position:relative!important;overflow:visible!important;background:#182432!important;border-color:#304359!important;}
+.mcm8-search-host input{font-size:11.5px!important;color:#dfe8f2!important;}
+.mcm8-search-results{position:absolute;top:calc(100% + 7px);left:0;width:min(620px,60vw);max-height:520px;overflow:auto;z-index:2147483600;background:#192635;border:1px solid #354a61;border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,.38);padding:7px;}
+.mcm8-search-results[hidden]{display:none!important;}
+.mcm8-search-section>span{display:block;padding:7px 9px 5px;color:#8296ac;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+.mcm8-search-section button{width:100%;min-height:48px;display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;gap:10px;padding:7px 9px;text-align:left;color:#dde7f0;background:transparent;border:0;border-radius:8px;cursor:pointer;}
+.mcm8-search-section button:hover{background:#243548;}
+.mcm8-search-section button>i{width:7px;height:7px;border-radius:50%;background:#8492a4;}
+.mcm8-search-section button>i.online{background:var(--m8-green);}.mcm8-search-section button>i.offline{background:var(--m8-red);}.mcm8-search-section button>i.attention{background:var(--m8-amber);}.mcm8-search-section button>i.group{background:var(--m8-primary);}
+.mcm8-search-section button b{display:block;font-size:11px;font-weight:600;}.mcm8-search-section button small{display:block;margin-top:2px;color:#899bad;font-size:9px;}.mcm8-search-section button em{font-style:normal;color:#91a4b8;font-size:9px;}
+.mcm8-search-empty{padding:18px;color:#8d9eb0;text-align:center;font-size:10px;}
+
+/* The tool frame is visually part of the device workspace, not a second app. */
+html[data-mc-modern-overlay="v8"] .mcm5-toolview{border:0!important;background:transparent!important;border-radius:0!important;overflow:hidden!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-toolhead{min-height:52px;padding:8px 12px!important;background:var(--m8-surface-2)!important;border:1px solid var(--m8-border)!important;border-bottom:0!important;border-radius:10px 10px 0 0!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-tool-titleline b{font-size:12px!important;font-weight:650!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-toolhead small{font-size:9px!important;color:var(--m8-muted)!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-framehost{background:var(--m8-surface)!important;border:1px solid var(--m8-border)!important;border-top:0!important;border-radius:0 0 10px 10px!important;overflow:hidden!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-frame-slot{background:transparent!important;border:0!important;border-radius:0!important;}
+html[data-mc-modern-overlay="v8"] .mcm5-frame-slot iframe{display:block!important;width:100%!important;height:100%!important;border:0!important;border-radius:0!important;background:var(--m8-surface)!important;}
+html[data-mc-modern-overlay="v8"] .mcm6-native-ready::after{display:none!important;}
+
+/* Headless native engine: keep functionality, remove the 'old application inside a box' appearance. */
+html[data-mc-modern-native="v8"],body.mcm8-native-headless{background:var(--m8-surface)!important;color-scheme:dark;}
+body.mcm8-native-headless,body.mcm8-native-headless button,body.mcm8-native-headless input,body.mcm8-native-headless select,body.mcm8-native-headless textarea{font-family:var(--m8-font)!important;}
+body.mcm8-native-headless #mcm6NativeBadge{display:none!important;}
+body.mcm8-native-headless #container,
+body.mcm8-native-headless #column_l{background:var(--m8-surface)!important;padding:0!important;}
+body.mcm8-native-headless .mcm6-native-root{min-height:100vh!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:var(--m8-surface)!important;padding:8px!important;}
+body.mcm8-native-headless .areaHead,
+body.mcm8-native-headless .areaHead2,
+body.mcm8-native-headless .areaHead3,
+body.mcm8-native-headless .mcm6-native-toolbar{background:var(--m8-surface-2)!important;border-color:var(--m8-border-soft)!important;color:#dce5ef!important;}
+body.mcm8-native-headless .mcm6-native-button,
+body.mcm8-native-headless button,
+body.mcm8-native-headless input[type="button"],
+body.mcm8-native-headless input[type="submit"]{background:#243548!important;border-color:#3a5068!important;color:#dfe7ef!important;font-size:11px!important;border-radius:7px!important;}
+body.mcm8-native-headless input[type="text"],body.mcm8-native-headless input[type="password"],body.mcm8-native-headless input[type="search"],body.mcm8-native-headless textarea,body.mcm8-native-headless select{background:#162230!important;border-color:#35495f!important;color:#e1e8ef!important;font-size:11px!important;border-radius:7px!important;}
+body.mcm8-native-headless table{font-size:10.5px!important;color:#dce5ef!important;}
+body.mcm8-native-headless table th,body.mcm8-native-headless table thead td{background:#1d2b3a!important;color:#aab8c8!important;border-color:#314357!important;}
+body.mcm8-native-headless table td{border-color:#29394b!important;}
+body.mcm8-native-headless table tr:hover td{background:#223446!important;}
+
+/* File editor/dialog becomes a full integrated workspace and remains clickable. */
+body.mcm8-native-dialog-open{overflow:hidden!important;}
+body.mcm8-native-dialog-open #mcm6NativeBadge{display:none!important;}
+body.mcm8-native-headless #dialog.mcm8-integrated-dialog{
+  position:fixed!important;
+  inset:8px!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  z-index:2147483600!important;
+  overflow:auto!important;
+  pointer-events:auto!important;
+  color:#e5edf5!important;
+  background:#182432!important;
+  border:1px solid #3a5068!important;
+  border-radius:12px!important;
+  box-shadow:0 26px 80px rgba(0,0,0,.46)!important;
+}
+body.mcm8-native-headless #dialog.mcm8-file-editor-dialog #dialogHeader{min-height:46px!important;display:flex!important;align-items:center!important;padding:0 14px!important;background:#1d2b3a!important;border-bottom:1px solid #33475c!important;color:#e8eef5!important;font-size:13px!important;font-weight:650!important;}
+body.mcm8-native-headless #dialog.mcm8-file-editor-dialog #d4editorarea{display:block!important;width:calc(100% - 20px)!important;height:calc(100vh - 185px)!important;min-height:280px!important;margin:10px!important;padding:12px!important;overflow:auto!important;resize:none!important;white-space:pre!important;user-select:text!important;-webkit-user-select:text!important;pointer-events:auto!important;color:#e7edf5!important;background:#111b27!important;border:1px solid #354b61!important;border-radius:8px!important;font:12px/1.55 "Cascadia Mono","Segoe UI Mono",Consolas,monospace!important;}
+body.mcm8-native-headless #dialog.mcm8-file-editor-dialog input[type="button"],body.mcm8-native-headless #dialog.mcm8-file-editor-dialog button{pointer-events:auto!important;}
+
+/* Remote desktop and terminal should feel native to the panel. */
+body.mcm8-native-headless.mcm6-desktop .mcm6-native-root,body.mcm8-native-headless.mcm6-terminal .mcm6-native-root{background:#111a25!important;padding:6px!important;}
+body.mcm8-native-headless.mcm6-desktop canvas#Desk{border:0!important;border-radius:8px!important;box-shadow:none!important;}
+body.mcm8-native-headless.mcm6-terminal .xterm,body.mcm8-native-headless.mcm6-terminal .xterm-viewport{background:#0d151f!important;}
+
+@media(max-width:1100px){
+  .mcm8-search-results{width:min(560px,84vw);}
+  html[data-mc-modern-overlay="v8"] .mcm7-primary-nav button{font-size:11px!important;padding-left:8px!important;padding-right:8px!important;}
+}

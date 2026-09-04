@@ -1,0 +1,6 @@
+(function(){
+'use strict';
+var p=new URLSearchParams(location.search);if(p.get('mcmembed')==='1')return;var KEY='meshcommander-v9-telemetry';
+function load(){fetch('meshcommander/v9-fleet.json?ts='+Date.now(),{cache:'no-store',credentials:'same-origin'}).then(function(r){if(!r.ok)throw new Error('no snapshot');return r.json();}).then(function(doc){if(!doc||!doc.telemetry)return;var cur={};try{cur=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}Object.keys(doc.telemetry).forEach(function(id){var x=doc.telemetry[id]||{};cur[id]={ts:Date.parse(doc.generatedAt)||Date.now(),encryption:x.encryption||'unknown',biosSerial:x.biosSerial||'',uuid:x.uuid||''};});try{localStorage.setItem(KEY,JSON.stringify(cur));}catch(e){}var title=document.querySelector('#mcm9Compliance .mcm9-section-title span');if(title)title.textContent='Indicadores acionáveis · inventário '+(doc.generatedAt?new Date(doc.generatedAt).toLocaleString():'atualizado');var b=document.getElementById('mcm9RefreshCompliance');if(b)b.click();}).catch(function(){});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(load,1500);},{once:true});else setTimeout(load,1500);setInterval(load,5*60*1000);
+})();

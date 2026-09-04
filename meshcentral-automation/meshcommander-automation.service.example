@@ -1,0 +1,25 @@
+[Unit]
+Description=MeshCommander Automation Sidecar
+After=network-online.target meshcentral.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=administrator
+WorkingDirectory=/home/administrator/meshcentral
+Environment=MESHCENTRAL_ROOT=/home/administrator/meshcentral
+Environment=MCA_CONFIG=/home/administrator/meshcentral/automation/rules.json
+EnvironmentFile=-/home/administrator/meshcentral/automation/automation.env
+ExecStart=/home/administrator/.nvm/versions/node/v20.12.2/bin/node /home/administrator/meshcentral/automation/worker.js
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target
+
+# This is an example only. Do not enable it until dry-run has been validated,
+# credentials/permissions are approved, and paths are confirmed on the host.
