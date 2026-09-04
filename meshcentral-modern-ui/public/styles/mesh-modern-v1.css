@@ -1,0 +1,480 @@
+/*
+ * MeshCentral Modern UI v1
+ * Safe overlay for the existing MeshCentral Modern (default3) interface.
+ * Loaded only through domain customFiles scope=["default3"].
+ * No protocol, agent, relay, KVM, terminal or file-transfer logic is changed.
+ */
+
+body.mc-modern-v1 {
+    --mcm-bg: #f4f7fb;
+    --mcm-surface: #ffffff;
+    --mcm-surface-2: #f8fafc;
+    --mcm-surface-3: #eef3f9;
+    --mcm-sidebar: #0f172a;
+    --mcm-sidebar-2: #172554;
+    --mcm-header: #0b1220;
+    --mcm-border: #dbe4ef;
+    --mcm-border-strong: #cbd7e6;
+    --mcm-text: #172033;
+    --mcm-muted: #64748b;
+    --mcm-primary: #2563eb;
+    --mcm-primary-hover: #1d4ed8;
+    --mcm-primary-soft: #dbeafe;
+    --mcm-success: #15803d;
+    --mcm-warning: #b45309;
+    --mcm-danger: #b91c1c;
+    --mcm-radius: 12px;
+    --mcm-radius-sm: 8px;
+    --mcm-shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 8px 24px rgba(15, 23, 42, .06);
+    --mcm-shadow-lg: 0 18px 48px rgba(15, 23, 42, .14);
+    --mcm-sidebar-width: 78px;
+
+    margin: 0;
+    color: var(--mcm-text);
+    background: var(--mcm-bg);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+body.mc-modern-v1[data-bs-theme="dark"],
+body.mc-modern-v1.night {
+    --mcm-bg: #0b1120;
+    --mcm-surface: #111827;
+    --mcm-surface-2: #172033;
+    --mcm-surface-3: #1d2939;
+    --mcm-sidebar: #080d18;
+    --mcm-sidebar-2: #111c35;
+    --mcm-header: #080d18;
+    --mcm-border: #27344a;
+    --mcm-border-strong: #334155;
+    --mcm-text: #e5edf8;
+    --mcm-muted: #9aabc2;
+    --mcm-primary: #60a5fa;
+    --mcm-primary-hover: #93c5fd;
+    --mcm-primary-soft: rgba(37, 99, 235, .20);
+    --mcm-success: #4ade80;
+    --mcm-warning: #fbbf24;
+    --mcm-danger: #f87171;
+    --mcm-shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 10px 30px rgba(0, 0, 0, .22);
+    --mcm-shadow-lg: 0 20px 60px rgba(0, 0, 0, .40);
+}
+
+/* Preserve native full remote-desktop layout. */
+body.mc-modern-v1.fulldesk {
+    background: #000;
+}
+
+body.mc-modern-v1:not(.fulldesk) #container {
+    background: var(--mcm-bg);
+    border: 0;
+}
+
+body.mc-modern-v1.fullscreen:not(.fulldesk) #container {
+    grid-template-columns: var(--mcm-sidebar-width) minmax(0, 1fr);
+}
+
+/* Header */
+body.mc-modern-v1:not(.fulldesk) #masthead {
+    min-height: 64px;
+    height: 64px;
+    box-sizing: border-box;
+    padding: 0 18px;
+    color: #f8fafc;
+    background: linear-gradient(135deg, var(--mcm-header), #14213a 72%, #172554);
+    background-image: none;
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, .18);
+    z-index: 1050;
+}
+
+body.mc-modern-v1:not(.fulldesk) #masthead .title {
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 25px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -.025em;
+    text-shadow: none;
+}
+
+body.mc-modern-v1:not(.fulldesk) #masthead .title2 {
+    color: #9fb0ca;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    text-shadow: none;
+}
+
+body.mc-modern-v1:not(.fulldesk) #masthead .masthead-right,
+body.mc-modern-v1:not(.fulldesk) #masthead .user-menu-container {
+    gap: 8px;
+}
+
+body.mc-modern-v1:not(.fulldesk) #masthead .notification-icon,
+body.mc-modern-v1:not(.fulldesk) #notificationCount {
+    border-radius: 9px;
+    transition: background .15s ease, transform .15s ease;
+}
+
+body.mc-modern-v1:not(.fulldesk) #masthead .notification-icon:hover,
+body.mc-modern-v1:not(.fulldesk) #notificationCount:hover {
+    background: rgba(255, 255, 255, .10);
+}
+
+/* Sidebar */
+body.mc-modern-v1:not(.fulldesk) #page_leftbar {
+    width: var(--mcm-sidebar-width);
+    background: linear-gradient(180deg, var(--mcm-sidebar), var(--mcm-sidebar-2));
+    border-right: 1px solid rgba(255,255,255,.06);
+    box-shadow: 6px 0 20px rgba(15, 23, 42, .08);
+}
+
+body.mc-modern-v1:not(.fulldesk) .lbbutton {
+    width: calc(var(--mcm-sidebar-width) - 12px);
+    min-height: 52px;
+    margin: 5px 6px;
+    border-radius: 11px;
+    border: 1px solid transparent;
+    background: transparent;
+    opacity: .78;
+    transition: background .16s ease, opacity .16s ease, transform .16s ease, border-color .16s ease;
+}
+
+body.mc-modern-v1:not(.fulldesk) .lbbutton:hover {
+    opacity: 1;
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.07);
+    transform: translateY(-1px);
+}
+
+body.mc-modern-v1:not(.fulldesk) .lbbuttonsel,
+body.mc-modern-v1:not(.fulldesk) .lbbuttonsel2 {
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(37,99,235,.92), rgba(59,130,246,.72));
+    border-color: rgba(147,197,253,.32);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, .25);
+}
+
+body.mc-modern-v1:not(.fulldesk) .lbtg {
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.22));
+}
+
+/* Top navigation / submenus */
+body.mc-modern-v1:not(.fulldesk) #topbar {
+    min-height: 38px;
+    background: var(--mcm-surface);
+    border-bottom: 1px solid var(--mcm-border);
+    box-shadow: 0 2px 10px rgba(15,23,42,.035);
+    z-index: 900;
+}
+
+body.mc-modern-v1:not(.fulldesk) #MainSubMenuSpan,
+body.mc-modern-v1:not(.fulldesk) #MeshSubMenuSpan,
+body.mc-modern-v1:not(.fulldesk) #EventsSubMenuSpan,
+body.mc-modern-v1:not(.fulldesk) #UserSubMenuSpan,
+body.mc-modern-v1:not(.fulldesk) #UsersSubMenuSpan,
+body.mc-modern-v1:not(.fulldesk) #ServerSubMenuSpan,
+body.mc-modern-v1:not(.fulldesk) #MainMenuSpan,
+body.mc-modern-v1:not(.fulldesk) #MainSubMenu,
+body.mc-modern-v1:not(.fulldesk) #MeshSubMenu,
+body.mc-modern-v1:not(.fulldesk) #UserSubMenu,
+body.mc-modern-v1:not(.fulldesk) #ServerSubMenu,
+body.mc-modern-v1:not(.fulldesk) #UserDummyMenu,
+body.mc-modern-v1:not(.fulldesk) #PluginSubMenu {
+    min-height: 38px;
+    height: auto;
+    color: var(--mcm-muted);
+    background: var(--mcm-surface);
+}
+
+body.mc-modern-v1:not(.fulldesk) .topbar_td {
+    height: 38px;
+    padding: 0 12px;
+    color: var(--mcm-muted);
+    font-weight: 600;
+    transition: color .15s ease, background .15s ease;
+}
+
+body.mc-modern-v1:not(.fulldesk) .topbar_td:hover {
+    color: var(--mcm-primary);
+    background: var(--mcm-primary-soft);
+}
+
+/* Main content */
+body.mc-modern-v1:not(.fulldesk) #column_l {
+    box-sizing: border-box;
+    padding: 18px 20px 28px;
+    background: var(--mcm-bg);
+}
+
+body.mc-modern-v1:not(.fulldesk) h1,
+body.mc-modern-v1:not(.fulldesk) h2,
+body.mc-modern-v1:not(.fulldesk) h3,
+body.mc-modern-v1:not(.fulldesk) h4 {
+    color: var(--mcm-text);
+    font-family: inherit;
+    letter-spacing: -.01em;
+}
+
+body.mc-modern-v1:not(.fulldesk) h1 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+body.mc-modern-v1:not(.fulldesk) h2 {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Bootstrap-like surfaces */
+body.mc-modern-v1:not(.fulldesk) .card,
+body.mc-modern-v1:not(.fulldesk) .modal-content,
+body.mc-modern-v1:not(.fulldesk) .dropdown-menu,
+body.mc-modern-v1:not(.fulldesk) .offcanvas,
+body.mc-modern-v1:not(.fulldesk) .list-group-item {
+    color: var(--mcm-text);
+    background: var(--mcm-surface);
+    border-color: var(--mcm-border);
+}
+
+body.mc-modern-v1:not(.fulldesk) .card {
+    border-radius: var(--mcm-radius);
+    box-shadow: var(--mcm-shadow);
+}
+
+body.mc-modern-v1:not(.fulldesk) .card-header,
+body.mc-modern-v1:not(.fulldesk) .card-footer {
+    background: var(--mcm-surface-2);
+    border-color: var(--mcm-border);
+}
+
+body.mc-modern-v1:not(.fulldesk) .modal-content {
+    border: 1px solid var(--mcm-border);
+    border-radius: 14px;
+    box-shadow: var(--mcm-shadow-lg);
+    overflow: hidden;
+}
+
+body.mc-modern-v1:not(.fulldesk) .modal-header,
+body.mc-modern-v1:not(.fulldesk) .modal-footer {
+    border-color: var(--mcm-border);
+}
+
+/* Legacy dialog surfaces */
+body.mc-modern-v1:not(.fulldesk) #dialog,
+body.mc-modern-v1:not(.fulldesk) #dialog2,
+body.mc-modern-v1:not(.fulldesk) #xxdialog,
+body.mc-modern-v1:not(.fulldesk) .dialogbox {
+    border-radius: 14px !important;
+    box-shadow: var(--mcm-shadow-lg) !important;
+}
+
+/* Inputs */
+body.mc-modern-v1:not(.fulldesk) input[type="text"],
+body.mc-modern-v1:not(.fulldesk) input[type="password"],
+body.mc-modern-v1:not(.fulldesk) input[type="search"],
+body.mc-modern-v1:not(.fulldesk) input[type="email"],
+body.mc-modern-v1:not(.fulldesk) input[type="number"],
+body.mc-modern-v1:not(.fulldesk) select,
+body.mc-modern-v1:not(.fulldesk) textarea,
+body.mc-modern-v1:not(.fulldesk) .form-control,
+body.mc-modern-v1:not(.fulldesk) .form-select {
+    color: var(--mcm-text);
+    background-color: var(--mcm-surface);
+    border: 1px solid var(--mcm-border-strong);
+    border-radius: 8px;
+    box-shadow: none;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+body.mc-modern-v1:not(.fulldesk) input:focus,
+body.mc-modern-v1:not(.fulldesk) select:focus,
+body.mc-modern-v1:not(.fulldesk) textarea:focus,
+body.mc-modern-v1:not(.fulldesk) .form-control:focus,
+body.mc-modern-v1:not(.fulldesk) .form-select:focus {
+    border-color: var(--mcm-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .13);
+    outline: none;
+}
+
+/* Buttons */
+body.mc-modern-v1:not(.fulldesk) button,
+body.mc-modern-v1:not(.fulldesk) input[type="button"],
+body.mc-modern-v1:not(.fulldesk) input[type="submit"],
+body.mc-modern-v1:not(.fulldesk) .btn {
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+}
+
+body.mc-modern-v1:not(.fulldesk) button:hover:not(:disabled),
+body.mc-modern-v1:not(.fulldesk) input[type="button"]:hover:not(:disabled),
+body.mc-modern-v1:not(.fulldesk) input[type="submit"]:hover:not(:disabled),
+body.mc-modern-v1:not(.fulldesk) .btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+body.mc-modern-v1:not(.fulldesk) .btn-primary {
+    background: var(--mcm-primary);
+    border-color: var(--mcm-primary);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, .18);
+}
+
+body.mc-modern-v1:not(.fulldesk) .btn-primary:hover {
+    background: var(--mcm-primary-hover);
+    border-color: var(--mcm-primary-hover);
+}
+
+body.mc-modern-v1:not(.fulldesk) .btn-secondary,
+body.mc-modern-v1:not(.fulldesk) .btn-light {
+    color: var(--mcm-text);
+    background: var(--mcm-surface);
+    border-color: var(--mcm-border-strong);
+}
+
+/* Tables */
+body.mc-modern-v1:not(.fulldesk) table {
+    color: var(--mcm-text);
+}
+
+body.mc-modern-v1:not(.fulldesk) .table,
+body.mc-modern-v1:not(.fulldesk) .table-responsive {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--mcm-text);
+    --bs-table-border-color: var(--mcm-border);
+}
+
+body.mc-modern-v1:not(.fulldesk) .table > :not(caption) > * > * {
+    border-bottom-color: var(--mcm-border);
+}
+
+body.mc-modern-v1:not(.fulldesk) .table thead th,
+body.mc-modern-v1:not(.fulldesk) th {
+    color: var(--mcm-muted);
+    font-weight: 700;
+    background: var(--mcm-surface-2);
+}
+
+body.mc-modern-v1:not(.fulldesk) .table-hover > tbody > tr:hover > *,
+body.mc-modern-v1:not(.fulldesk) tr:hover > td {
+    background-color: rgba(37, 99, 235, .045);
+}
+
+/* Common device-list areas */
+body.mc-modern-v1:not(.fulldesk) #devListToolbar,
+body.mc-modern-v1:not(.fulldesk) #kvmListToolbar,
+body.mc-modern-v1:not(.fulldesk) #devListToolbarSpan {
+    gap: 8px;
+}
+
+body.mc-modern-v1:not(.fulldesk) #devListToolbar,
+body.mc-modern-v1:not(.fulldesk) #kvmListToolbar {
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: var(--mcm-surface);
+    border: 1px solid var(--mcm-border);
+    border-radius: var(--mcm-radius);
+    box-shadow: var(--mcm-shadow);
+}
+
+/* Badges / status */
+body.mc-modern-v1:not(.fulldesk) .badge {
+    border-radius: 999px;
+    font-weight: 650;
+    letter-spacing: .01em;
+}
+
+body.mc-modern-v1:not(.fulldesk) .alert {
+    border-radius: 10px;
+    border-width: 1px;
+}
+
+/* Context menus */
+body.mc-modern-v1:not(.fulldesk) .contextMenu,
+body.mc-modern-v1:not(.fulldesk) #uiMenu {
+    color: var(--mcm-text);
+    background: var(--mcm-surface);
+    border: 1px solid var(--mcm-border);
+    border-radius: 10px;
+    box-shadow: var(--mcm-shadow-lg);
+    overflow: hidden;
+}
+
+body.mc-modern-v1:not(.fulldesk) .cmtext {
+    padding: 7px 10px;
+    transition: background .12s ease, color .12s ease;
+}
+
+body.mc-modern-v1:not(.fulldesk) .cmtext:hover {
+    color: var(--mcm-primary);
+    background: var(--mcm-primary-soft);
+}
+
+/* Scrollbars */
+body.mc-modern-v1 * {
+    scrollbar-width: thin;
+    scrollbar-color: #9aacbf transparent;
+}
+
+body.mc-modern-v1 *::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+body.mc-modern-v1 *::-webkit-scrollbar-thumb {
+    background: #9aacbf;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+}
+
+body.mc-modern-v1 *::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Small unobtrusive marker so operators can immediately identify the overlay. */
+body.mc-modern-v1:not(.fulldesk) #mcmModernMarker {
+    position: fixed;
+    right: 14px;
+    bottom: 12px;
+    z-index: 9000;
+    padding: 5px 9px;
+    color: var(--mcm-muted);
+    background: color-mix(in srgb, var(--mcm-surface) 92%, transparent);
+    border: 1px solid var(--mcm-border);
+    border-radius: 999px;
+    box-shadow: var(--mcm-shadow);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    pointer-events: none;
+    opacity: .72;
+}
+
+@supports not (background: color-mix(in srgb, white 50%, black)) {
+    body.mc-modern-v1:not(.fulldesk) #mcmModernMarker {
+        background: var(--mcm-surface);
+    }
+}
+
+@media (max-width: 900px) {
+    body.mc-modern-v1 {
+        --mcm-sidebar-width: 70px;
+    }
+
+    body.mc-modern-v1:not(.fulldesk) #column_l {
+        padding: 12px 12px 22px;
+    }
+
+    body.mc-modern-v1:not(.fulldesk) #masthead {
+        padding: 0 12px;
+    }
+
+    body.mc-modern-v1:not(.fulldesk) #masthead .title {
+        font-size: 20px;
+    }
+}
