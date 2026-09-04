@@ -1,0 +1,368 @@
+/* MeshCommander Modern UI v1
+ * Non-invasive visual layer over the legacy DOM.
+ * Functional logic remains untouched.
+ */
+
+:root {
+  --mc-bg: #0b1220;
+  --mc-bg-soft: #0f172a;
+  --mc-panel: #111c2f;
+  --mc-panel-2: #16233a;
+  --mc-border: #26364f;
+  --mc-border-soft: #1c2b42;
+  --mc-text: #e5eefc;
+  --mc-muted: #91a4c2;
+  --mc-primary: #3b82f6;
+  --mc-primary-2: #60a5fa;
+  --mc-success: #22c55e;
+  --mc-warning: #f59e0b;
+  --mc-danger: #ef4444;
+  --mc-radius: 12px;
+  --mc-radius-sm: 8px;
+  --mc-shadow: 0 12px 30px rgba(0,0,0,.22);
+  --mc-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html[data-mesh-ui="modern"],
+body[data-mesh-ui="modern"] {
+  background: var(--mc-bg) !important;
+  color: var(--mc-text) !important;
+  font-family: var(--mc-font) !important;
+  font-size: 13px !important;
+}
+
+body[data-mesh-ui="modern"] {
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+body[data-mesh-ui="modern"] * {
+  box-sizing: border-box;
+}
+
+body[data-mesh-ui="modern"] a,
+body[data-mesh-ui="modern"] a:visited,
+body[data-mesh-ui="modern"] a:link {
+  color: var(--mc-primary-2) !important;
+  text-decoration: none !important;
+}
+
+body[data-mesh-ui="modern"] a:hover {
+  color: #93c5fd !important;
+}
+
+body[data-mesh-ui="modern"] h1 {
+  color: var(--mc-text) !important;
+  font-size: 22px !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+  margin: 0 0 18px !important;
+  letter-spacing: -.02em;
+}
+
+body[data-mesh-ui="modern"] h2,
+body[data-mesh-ui="modern"] h3 {
+  color: var(--mc-text) !important;
+}
+
+/* Top bar */
+body[data-mesh-ui="modern"] .header {
+  height: 64px !important;
+  background: rgba(15, 23, 42, .96) !important;
+  border-bottom: 1px solid var(--mc-border-soft) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,.16) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+body[data-mesh-ui="modern"] .progressbar {
+  top: 64px !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, var(--mc-primary), #22d3ee) !important;
+}
+
+body[data-mesh-ui="modern"] .top1 {
+  color: #f8fbff !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.02em;
+  margin-top: 9px !important;
+}
+
+body[data-mesh-ui="modern"] .top2 {
+  color: var(--mc-muted) !important;
+  font-size: 12px !important;
+}
+
+body[data-mesh-ui="modern"] .topCell {
+  background-image: none !important;
+}
+
+/* Left navigation */
+body[data-mesh-ui="modern"] .navbar {
+  top: 66px !important;
+  width: 224px !important;
+  padding: 14px 10px !important;
+  border-right: 1px solid var(--mc-border-soft) !important;
+  background: #0d1727 !important;
+  overflow-y: auto !important;
+}
+
+body[data-mesh-ui="modern"] .maincell {
+  top: 66px !important;
+  left: 224px !important;
+  padding-left: 0 !important;
+  background: var(--mc-bg) !important;
+}
+
+body[data-mesh-ui="modern"] .fullcell {
+  top: 66px !important;
+  background: var(--mc-bg) !important;
+}
+
+body[data-mesh-ui="modern"] .nav1,
+body[data-mesh-ui="modern"] .nav2 {
+  color: #b7c5dd !important;
+  border-radius: 9px !important;
+  min-height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  margin: 2px 0 !important;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+
+body[data-mesh-ui="modern"] .nav1 {
+  padding: 0 12px !important;
+  font-weight: 600 !important;
+}
+
+body[data-mesh-ui="modern"] .nav2 {
+  margin-left: 18px !important;
+  padding: 0 10px !important;
+}
+
+body[data-mesh-ui="modern"] .nav1:hover,
+body[data-mesh-ui="modern"] .nav2:hover {
+  background: #16243a !important;
+  color: #fff !important;
+}
+
+body[data-mesh-ui="modern"] .nav1 a,
+body[data-mesh-ui="modern"] .nav2 a {
+  color: inherit !important;
+  width: 100%;
+}
+
+/* Main content */
+body[data-mesh-ui="modern"] #id_mainarea_pad {
+  padding: 22px !important;
+  background: var(--mc-bg) !important;
+}
+
+body[data-mesh-ui="modern"] .spread,
+body[data-mesh-ui="modern"] .r0 {
+  background: transparent !important;
+}
+
+/* Tables */
+body[data-mesh-ui="modern"] table {
+  color: var(--mc-text) !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+body[data-mesh-ui="modern"] td,
+body[data-mesh-ui="modern"] th {
+  font-size: 13px !important;
+  color: var(--mc-text) !important;
+}
+
+body[data-mesh-ui="modern"] th {
+  color: var(--mc-muted) !important;
+  background: #142036 !important;
+  border-bottom: 1px solid var(--mc-border) !important;
+  padding: 10px 12px !important;
+}
+
+body[data-mesh-ui="modern"] th:hover {
+  background: #1a2a45 !important;
+}
+
+body[data-mesh-ui="modern"] .r1,
+body[data-mesh-ui="modern"] .r2,
+body[data-mesh-ui="modern"] .r3 {
+  border-color: var(--mc-border-soft) !important;
+  color: var(--mc-text) !important;
+}
+
+body[data-mesh-ui="modern"] .r3:hover,
+body[data-mesh-ui="modern"] .log tbody tr:hover,
+body[data-mesh-ui="modern"] .log1 tbody tr:hover {
+  background: #172840 !important;
+}
+
+body[data-mesh-ui="modern"] .log,
+body[data-mesh-ui="modern"] .log1,
+body[data-mesh-ui="modern"] .log tbody tr:nth-child(odd) {
+  background: transparent !important;
+}
+
+/* Inputs */
+body[data-mesh-ui="modern"] input,
+body[data-mesh-ui="modern"] select,
+body[data-mesh-ui="modern"] textarea,
+body[data-mesh-ui="modern"] button {
+  font-family: var(--mc-font) !important;
+  font-size: 13px !important;
+}
+
+body[data-mesh-ui="modern"] input[type="text"],
+body[data-mesh-ui="modern"] input[type="password"],
+body[data-mesh-ui="modern"] input[type="number"],
+body[data-mesh-ui="modern"] select,
+body[data-mesh-ui="modern"] textarea {
+  color: var(--mc-text) !important;
+  background: #0f1b2e !important;
+  border: 1px solid var(--mc-border) !important;
+  border-radius: 8px !important;
+  min-height: 34px !important;
+  padding: 6px 9px !important;
+  outline: none !important;
+}
+
+body[data-mesh-ui="modern"] input:focus,
+body[data-mesh-ui="modern"] select:focus,
+body[data-mesh-ui="modern"] textarea:focus {
+  border-color: var(--mc-primary) !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.13) !important;
+}
+
+body[data-mesh-ui="modern"] input[type="button"],
+body[data-mesh-ui="modern"] input[type="submit"],
+body[data-mesh-ui="modern"] button {
+  color: #eef6ff !important;
+  background: #1d4ed8 !important;
+  border: 1px solid #2f6fec !important;
+  border-radius: 8px !important;
+  min-height: 34px !important;
+  padding: 6px 12px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(29,78,216,.18);
+}
+
+body[data-mesh-ui="modern"] input[type="button"]:hover,
+body[data-mesh-ui="modern"] input[type="submit"]:hover,
+body[data-mesh-ui="modern"] button:hover {
+  filter: brightness(1.08);
+}
+
+body[data-mesh-ui="modern"] input:disabled,
+body[data-mesh-ui="modern"] button:disabled {
+  opacity: .45 !important;
+  cursor: not-allowed !important;
+}
+
+/* Cards / legacy bars */
+body[data-mesh-ui="modern"] .itemBar {
+  background: var(--mc-panel) !important;
+  border: 1px solid var(--mc-border) !important;
+  border-radius: var(--mc-radius) !important;
+  color: var(--mc-text) !important;
+  box-shadow: var(--mc-shadow);
+}
+
+body[data-mesh-ui="modern"] .computeritem {
+  height: auto !important;
+  min-height: 40px !important;
+  margin: 4px 0 !important;
+  padding: 8px 10px !important;
+  border-radius: 9px !important;
+  color: var(--mc-text) !important;
+}
+
+body[data-mesh-ui="modern"] .computeritem:hover {
+  background: #172840 !important;
+}
+
+body[data-mesh-ui="modern"] .computeritemcir {
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,.04);
+}
+
+/* Alerts */
+body[data-mesh-ui="modern"] .warn {
+  color: #fca5a5 !important;
+}
+
+body[data-mesh-ui="modern"] [style*="background-color:lightsalmon"],
+body[data-mesh-ui="modern"] [style*="background-color: lightSalmon"],
+body[data-mesh-ui="modern"] [style*="background-color: lightyellow"] {
+  background: rgba(245,158,11,.13) !important;
+  color: #fde68a !important;
+  border: 1px solid rgba(245,158,11,.28) !important;
+  border-radius: 10px !important;
+}
+
+/* Dialogs and floating legacy surfaces */
+body[data-mesh-ui="modern"] .contextMenu {
+  background: #101b2d !important;
+  border: 1px solid var(--mc-border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--mc-shadow) !important;
+  color: var(--mc-text) !important;
+  padding: 6px !important;
+}
+
+body[data-mesh-ui="modern"] .cmtext {
+  color: #c8d6ec !important;
+  border-radius: 6px;
+}
+
+body[data-mesh-ui="modern"] .cmtext:hover {
+  background: #1c3354 !important;
+  color: #fff !important;
+}
+
+/* Remote desktop workspace */
+body[data-mesh-ui="modern"] #p14 {
+  min-width: 0 !important;
+}
+
+body[data-mesh-ui="modern"] #id_rdheader {
+  margin-bottom: 8px;
+}
+
+body[data-mesh-ui="modern"] canvas,
+body[data-mesh-ui="modern"] video {
+  border-radius: 10px;
+}
+
+/* File list */
+body[data-mesh-ui="modern"] .filelist {
+  background: transparent !important;
+  color: var(--mc-text) !important;
+  border-bottom: 1px solid var(--mc-border-soft);
+  min-height: 28px;
+}
+
+/* Scrollbars */
+body[data-mesh-ui="modern"] * {
+  scrollbar-width: thin;
+  scrollbar-color: #334766 transparent;
+}
+body[data-mesh-ui="modern"] *::-webkit-scrollbar { width: 10px; height: 10px; }
+body[data-mesh-ui="modern"] *::-webkit-scrollbar-track { background: transparent; }
+body[data-mesh-ui="modern"] *::-webkit-scrollbar-thumb { background: #334766; border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+
+/* Responsive support for browser-hosted builds */
+@media (max-width: 900px) {
+  body[data-mesh-ui="modern"] .navbar {
+    width: 176px !important;
+  }
+  body[data-mesh-ui="modern"] .maincell {
+    left: 176px !important;
+  }
+  body[data-mesh-ui="modern"] #id_mainarea_pad {
+    padding: 14px !important;
+  }
+}
