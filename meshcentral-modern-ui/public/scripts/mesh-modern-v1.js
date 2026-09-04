@@ -1,52 +1,14 @@
-(function () {
-    'use strict';
-
-    var labels = {
-        LeftMenuMyDevices: 'Devices',
-        LeftMenuMyAccount: 'Account',
-        LeftMenuMyEvents: 'Events',
-        LeftMenuMyFiles: 'Files',
-        LeftMenuMyUsers: 'Users',
-        LeftMenuMyServer: 'Server'
-    };
-
-    function decorateSidebar() {
-        Object.keys(labels).forEach(function (id) {
-            var el = document.getElementById(id);
-            if (!el || el.querySelector('.mcm-nav-label')) return;
-            var span = document.createElement('span');
-            span.className = 'mcm-nav-label';
-            span.textContent = labels[id];
-            el.appendChild(span);
-            el.setAttribute('title', labels[id]);
-        });
-    }
-
-    function activate() {
-        if (!document.body) return;
-        document.body.classList.add('mc-modern-v1');
-        document.documentElement.setAttribute('data-mc-modern-overlay', 'v1.1');
-        decorateSidebar();
-
-        if (!document.getElementById('mcmModernMarker')) {
-            var marker = document.createElement('div');
-            marker.id = 'mcmModernMarker';
-            marker.textContent = 'Modern UI v1.1';
-            marker.setAttribute('aria-hidden', 'true');
-            document.body.appendChild(marker);
-        } else {
-            document.getElementById('mcmModernMarker').textContent = 'Modern UI v1.1';
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', activate, { once: true });
-    } else {
-        activate();
-    }
-
-    window.addEventListener('load', function () {
-        activate();
-        setTimeout(activate, 250);
-    }, { once: true });
+(function(){'use strict';
+var labels={LeftMenuMyDevices:'Devices',LeftMenuMyAccount:'Account',LeftMenuMyEvents:'Events',LeftMenuMyFiles:'Files',LeftMenuMyUsers:'Users',LeftMenuMyServer:'Server'};
+function decorateSidebar(){Object.keys(labels).forEach(function(id){var el=document.getElementById(id);if(!el)return;if(!el.querySelector('.mcm-nav-label')){var s=document.createElement('span');s.className='mcm-nav-label';s.textContent=labels[id];el.appendChild(s);}el.setAttribute('title',labels[id]);});}
+function nodeStats(){var total=0,online=0,warn=0,offline=0;try{var n=window.nodes||{};var arr=Array.isArray(n)?n:Object.keys(n).map(function(k){return n[k];});arr=arr.filter(Boolean);total=arr.length;arr.forEach(function(x){var c=Number(x.conn||0);if(c>0)online++;else offline++;if(x.warn||x.warning||x.agentwarn)warn++;});}catch(e){}return{total:total,online:online,warn:warn,offline:offline};}
+function activeTitle(){var map={LeftMenuMyDevices:['Devices','Manage computers, groups and remote sessions'],LeftMenuMyAccount:['Account','Profile, security and personal settings'],LeftMenuMyEvents:['Events','Activity, alerts and audit trail'],LeftMenuMyFiles:['Files','Server and device file operations'],LeftMenuMyUsers:['Users','Users, permissions and access'],LeftMenuMyServer:['Server','Server status, configuration and operations']};for(var id in map){var el=document.getElementById(id);if(el&&(el.classList.contains('lbbuttonsel')||el.classList.contains('lbbuttonsel2')||el.getAttribute('aria-current')==='page'))return map[id];}return['Command Center','MeshCentral operations overview'];}
+function createCommandCenter(){var col=document.getElementById('column_l');if(!col||document.getElementById('mcmCommandCenter'))return;var shell=document.createElement('section');shell.id='mcmCommandCenter';shell.innerHTML='<div class="mcm-command-row"><div class="mcm-command-title"><h1 id="mcmPageTitle">Command Center</h1><p id="mcmPageSubtitle">MeshCentral operations overview</p></div><div class="mcm-command-tools"><label class="mcm-search"><span>⌕</span><input id="mcmGlobalSearch" type="search" placeholder="Search devices, groups or users..."></label></div></div><div class="mcm-stats"><div class="mcm-stat"><div class="mcm-stat-label">Devices</div><div class="mcm-stat-value"><span class="mcm-dot blue"></span><span id="mcmStatTotal">—</span></div></div><div class="mcm-stat"><div class="mcm-stat-label">Online</div><div class="mcm-stat-value"><span class="mcm-dot green"></span><span id="mcmStatOnline">—</span></div></div><div class="mcm-stat"><div class="mcm-stat-label">Attention</div><div class="mcm-stat-value"><span class="mcm-dot orange"></span><span id="mcmStatWarn">—</span></div></div><div class="mcm-stat"><div class="mcm-stat-label">Offline</div><div class="mcm-stat-value"><span class="mcm-dot red"></span><span id="mcmStatOffline">—</span></div></div></div>';
+col.insertBefore(shell,col.firstChild);
+var search=shell.querySelector('#mcmGlobalSearch');search.addEventListener('input',function(){var val=this.value;var candidates=['#SearchInput','#devSearch','#searchInput','#SearchBox','#p1SearchInput','input[type="search"]'];for(var i=0;i<candidates.length;i++){var t=document.querySelector(candidates[i]);if(t&&t!==search&&t.offsetParent!==null){t.value=val;t.dispatchEvent(new Event('input',{bubbles:true}));t.dispatchEvent(new Event('keyup',{bubbles:true}));break;}}});}
+function refreshCommandCenter(){var t=activeTitle(),h=document.getElementById('mcmPageTitle'),p=document.getElementById('mcmPageSubtitle');if(h)h.textContent=t[0];if(p)p.textContent=t[1];var s=nodeStats();var pairs=[['mcmStatTotal',s.total],['mcmStatOnline',s.online],['mcmStatWarn',s.warn],['mcmStatOffline',s.offline]];pairs.forEach(function(x){var e=document.getElementById(x[0]);if(e)e.textContent=(x[1]===0&&s.total===0)?'—':String(x[1]);});}
+function activate(){if(!document.body)return;document.body.classList.add('mc-modern-v1');document.documentElement.setAttribute('data-mc-modern-overlay','v2');decorateSidebar();createCommandCenter();refreshCommandCenter();var m=document.getElementById('mcmModernMarker');if(!m){m=document.createElement('div');m.id='mcmModernMarker';m.setAttribute('aria-hidden','true');document.body.appendChild(m);}m.textContent='Modern UI v2';}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',activate,{once:true});}else activate();
+window.addEventListener('load',function(){activate();setTimeout(activate,250);setTimeout(activate,1000);},{once:true});
+setInterval(function(){try{refreshCommandCenter();decorateSidebar();}catch(e){}},2000);
 })();
