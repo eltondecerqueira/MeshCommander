@@ -1,0 +1,37 @@
+{
+  "url": "wss://mesh.example.local",
+  "loginUser": "mesh-automation",
+  "domain": "",
+  "dryRun": true,
+  "intervalSeconds": 60,
+  "rules": [
+    {
+      "id": "offline-observe",
+      "name": "Observe offline endpoints",
+      "enabled": true,
+      "cooldownSeconds": 1800,
+      "condition": { "type": "offline" },
+      "action": { "type": "log" }
+    },
+    {
+      "id": "subnet-observe",
+      "name": "Detect devices in 10.20 subnet",
+      "enabled": false,
+      "cooldownSeconds": 3600,
+      "condition": { "type": "subnet", "prefix": "10.20." },
+      "action": { "type": "log" }
+    },
+    {
+      "id": "safe-diagnostic-example",
+      "name": "Example diagnostic command - keep disabled until approved",
+      "enabled": false,
+      "cooldownSeconds": 3600,
+      "condition": { "type": "online" },
+      "action": {
+        "type": "runcommand",
+        "powershell": true,
+        "command": "Get-ComputerInfo | Select-Object WindowsProductName,WindowsVersion,OsBuildNumber | ConvertTo-Json -Compress"
+      }
+    }
+  ]
+}
