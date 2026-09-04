@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MeshCommander Modern UI (NPM)</title>
+  <style>
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #0b1220; }
+    #legacyApp { width: 100%; height: 100%; border: 0; display: block; background: #0b1220; }
+    #boot { position: fixed; inset: 0; display: grid; place-items: center; background: #0b1220; color: #dbeafe; font: 14px/1.4 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; z-index: 10; }
+  </style>
+</head>
+<body>
+  <div id="boot">Carregando MeshCommander…</div>
+  <iframe id="legacyApp" src="default.htm" title="MeshCommander"></iframe>
+  <script>
+    (function () {
+      var frame = document.getElementById('legacyApp');
+      var boot = document.getElementById('boot');
+      frame.addEventListener('load', function () {
+        try {
+          var doc = frame.contentDocument || frame.contentWindow.document;
+          if (!doc) return;
+          var css = doc.createElement('link');
+          css.rel = 'stylesheet';
+          css.href = 'styles-modern.css';
+          css.setAttribute('data-mesh-modern-ui', '1');
+          doc.head.appendChild(css);
+          doc.documentElement.setAttribute('data-mesh-ui', 'modern');
+          doc.body.setAttribute('data-mesh-ui', 'modern');
+          boot.style.display = 'none';
+        } catch (e) {
+          boot.textContent = 'Não foi possível iniciar o tema moderno. Abra default.htm para usar a interface clássica.';
+          console.error('MeshCommander modern UI bootstrap failed:', e);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
