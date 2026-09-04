@@ -4,59 +4,32 @@ Esta frente moderniza a interface **Modern** nativa do MeshCentral (`default3`) 
 
 ## Arquitetura
 
-O MeshCentral ja possui o seletor Classic/Modern. A escolha Modern usa o template `default3`. O projeto aproveita o suporte oficial a `meshcentral-web` e `customFiles` para carregar CSS/JS somente no escopo `default3`.
+O MeshCentral ja possui o seletor Classic/Modern. A V1 usa o mecanismo `meshcentral-web` que o proprio servidor procura no startup. Nao depende de `meshcentral-config-schema.json` e nao exige `customFiles`.
 
 ```text
 MeshCentral
-├── Classic -> original
-└── Modern  -> default3 + mesh-modern-v1.css + mesh-modern-v1.js
+├── Classic -> default.handlebars original
+└── Modern  -> meshcentral-web/views/default3.handlebars
+                 + mesh-modern-v1.css
+                 + mesh-modern-v1.js
 ```
 
-Os arquivos customizados ficam fora de `node_modules`:
+O pacote NPM permanece intacto:
 
 ```text
 <meshcentral-root>/
-├── node_modules/meshcentral/      # pacote NPM original
-├── meshcentral-data/config.json
+├── node_modules/meshcentral/                 # original
+│   └── views/default3.handlebars             # original
 └── meshcentral-web/
+    ├── views/default3.handlebars              # override Modern
     └── public/
         ├── styles/mesh-modern-v1.css
         └── scripts/mesh-modern-v1.js
 ```
 
-## O que a V1 muda
-
-- tipografia e hierarquia visual;
-- cabeçalho;
-- sidebar;
-- navegação/submenus;
-- plano de fundo e superficies;
-- cards;
-- tabelas;
-- formularios;
-- botoes;
-- dialogs/modals;
-- menus de contexto;
-- toolbars de dispositivos;
-- modo escuro;
-- responsividade basica;
-- scrollbars.
-
-O modo `fulldesk` e deliberadamente preservado para reduzir risco no Remote Desktop.
-
 ## Instalacao
 
-### 1. Localize a raiz
-
-Entre no diretorio que contem `node_modules` e confirme:
-
-```bash
-pwd
-ls -lh node_modules/meshcentral/public
-ls -lh node_modules/meshcentral/views
-```
-
-### 2. Checkout do tema
+Na raiz que contem `node_modules/meshcentral`:
 
 ```bash
 cd /tmp
@@ -64,113 +37,66 @@ rm -rf meshcentral-modern-ui-src
 git clone --depth 1 --branch feature/meshcentral-modern-ui-v1 \
   https://github.com/eltondecerqueira/MeshCommander.git \
   meshcentral-modern-ui-src
-```
 
-### 3. Instale apenas os arquivos de override
-
-Volte para a raiz do MeshCentral e execute:
-
-```bash
+cd /CAMINHO/RAIZ/DO/MESHCENTRAL
 node /tmp/meshcentral-modern-ui-src/meshcentral-modern-ui/install.js "$(pwd)"
 ```
 
 O instalador:
 
-- valida `node_modules/meshcentral`;
-- cria `meshcentral-web/public/styles`;
-- cria `meshcentral-web/public/scripts`;
-- faz backup se uma V1 ja existir;
-- copia CSS e JS;
-- NAO altera `node_modules`;
-- NAO altera `config.json`;
-- NAO reinicia o servidor.
+- identifica a versao do MeshCentral pelo `package.json`;
+- confirma que `default3.handlebars` existe;
+- confirma suporte a override `meshcentral-web/views` e `meshcentral-web/public` no `meshcentral.js`;
+- usa um `default3.handlebars` de override existente como base, se houver;
+- caso contrario copia o `default3` original do pacote;
+- injeta apenas as referencias ao CSS/JS da V1;
+- cria backups quando ja existem overrides;
+- nao altera `node_modules`;
+- nao altera `config.json`;
+- nao reinicia o servidor.
 
-### 4. Backup do config
+## Ativacao
 
-```bash
-cp -a meshcentral-data/config.json \
-  meshcentral-data/config.json.backup-modern-ui-$(date +%Y%m%d-%H%M%S)
-```
-
-### 5. Edite o dominio no config.json
-
-No dominio usado pelo servidor (comumente `domains -> ""`), mescle:
-
-```json
-"showModernUIToggle": true,
-"customFiles": {
-  "mesh-modern-v1": {
-    "css": ["mesh-modern-v1.css"],
-    "js": ["mesh-modern-v1.js"],
-    "scope": ["default3"]
-  }
-}
-```
-
-Nao substitua outras propriedades existentes do dominio. Se `customFiles` ja existir, adicione somente a chave `mesh-modern-v1`.
-
-Valide o JSON antes de reiniciar:
+A deteccao de `meshcentral-web` ocorre no startup. Depois da instalacao, confirme como o MeshCentral esta rodando:
 
 ```bash
-node -e "JSON.parse(require('fs').readFileSync('meshcentral-data/config.json')); console.log('config.json OK')"
+ps -eo pid,user,cmd | grep -i '[m]eshcentral'
 ```
 
-### 6. Um unico restart controlado
+Reinicie somente usando o gerenciador real do ambiente (systemd, PM2 ou outro). Nao invente um comando de restart.
 
-O MeshCentral le a configuracao e detecta o override no startup. Portanto a ativacao persistente requer um restart controlado.
+Depois entre normalmente e use:
 
-Use o mesmo gerenciador que ja opera seu servidor, por exemplo:
+- `UI Settings -> Classic`: interface original;
+- `UI Settings -> Modern`: interface com a V1.
 
-```bash
-sudo systemctl restart meshcentral
-```
+A V1 mostra um pequeno marcador `Modern UI v1` no canto inferior direito para confirmar que o overlay foi carregado.
 
-ou PM2, se for o seu caso:
+## Rollback
 
-```bash
-pm2 restart meshcentral
-```
+Rollback imediato: escolha `UI Settings -> Classic`.
 
-Nao use esses comandos sem confirmar como o seu processo atual foi iniciado.
-
-### 7. Teste
-
-Entre normalmente no MeshCentral e abra **UI Settings**.
-
-- `Classic`: deve continuar original.
-- `Modern`: deve carregar a V1 e mostrar um pequeno marcador `Modern UI v1` no canto inferior direito.
-
-Teste pelo menos:
-
-1. lista de dispositivos;
-2. grupos;
-3. busca;
-4. detalhes de dispositivo;
-5. Desktop;
-6. Terminal;
-7. Files;
-8. Events;
-9. console;
-10. dialogs e menus;
-11. dark mode;
-12. fullscreen do Remote Desktop.
-
-## Rollback imediato
-
-Se houver qualquer problema visual, use **UI Settings -> Classic**. O Classic nao carrega o overlay porque `customFiles` esta limitado ao `default3`.
-
-## Rollback completo
-
-1. remova `mesh-modern-v1` de `customFiles` no config.json;
-2. valide o JSON;
-3. reinicie o MeshCentral;
-4. opcionalmente remova:
+Para rollback completo, remova ou renomeie o override `meshcentral-web/views/default3.handlebars` e os dois arquivos da V1, depois reinicie o MeshCentral:
 
 ```bash
+rm -f meshcentral-web/views/default3.handlebars
 rm -f meshcentral-web/public/styles/mesh-modern-v1.css
 rm -f meshcentral-web/public/scripts/mesh-modern-v1.js
 ```
 
-## Atualizacoes do MeshCentral
+Se havia um `default3.handlebars` customizado antes da instalacao, restaure o arquivo `.backup-*` criado pelo instalador em vez de simplesmente apagar.
 
-A customizacao fica em `meshcentral-web`, fora de `node_modules`, reduzindo o risco de ser sobrescrita por `npm update meshcentral`. Ainda assim, cada upgrade importante do MeshCentral deve ser testado com a V1 antes de promover para producao.
+## Testes recomendados
+
+1. lista de dispositivos e grupos;
+2. pesquisa e filtros;
+3. detalhes do dispositivo;
+4. Desktop/KVM;
+5. Terminal;
+6. Files;
+7. Events;
+8. dialogs e menus de contexto;
+9. dark mode;
+10. fullscreen do Remote Desktop.
+
+O modo `fulldesk` e deliberadamente preservado para reduzir risco na sessao remota.
