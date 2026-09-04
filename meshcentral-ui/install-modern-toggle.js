@@ -13,27 +13,66 @@ function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
+function insertHeadAsset(source, tag) {
+  // MeshCentral ships a heavily minified commander.htm. HTML minifiers are
+  // allowed to omit </head>, so prefer it when present and otherwise inject
+  // immediately before the first real <body ...> tag. If <body> is omitted as
+  // well, fall back to inserting after the final </style> or inside <head>.
+  const lower = source.toLowerCase();
+  const headClose = lower.indexOf('</head>');
+  if (headClose >= 0) {
+    return source.slice(0, headClose) + tag + source.slice(headClose);
+  }
+
+  const bodyOpen = lower.indexOf('<body');
+  if (bodyOpen >= 0) {
+    return source.slice(0, bodyOpen) + tag + source.slice(bodyOpen);
+  }
+
+  const lastStyleClose = lower.lastIndexOf('</style>');
+  if (lastStyleClose >= 0) {
+    const pos = lastStyleClose + '</style>'.length;
+    return source.slice(0, pos) + tag + source.slice(pos);
+  }
+
+  const headOpen = lower.indexOf('<head');
+  if (headOpen >= 0) {
+    const headOpenEnd = source.indexOf('>', headOpen);
+    if (headOpenEnd >= 0) {
+      const pos = headOpenEnd + 1;
+      return source.slice(0, pos) + tag + source.slice(pos);
+    }
+  }
+
+  fail('Nao foi possivel localizar uma area segura do HEAD no commander.htm. Nenhum arquivo foi alterado.');
+}
+
+function insertBodyAsset(source, tag) {
+  // </body> and </html> are optional in HTML and are commonly removed by the
+  // MeshCommander compiler/minifier. Prefer those anchors, otherwise append the
+  // script at EOF. An external script at EOF is still part of the document body.
+  const lower = source.toLowerCase();
+  const bodyClose = lower.lastIndexOf('</body>');
+  if (bodyClose >= 0) {
+    return source.slice(0, bodyClose) + tag + source.slice(bodyClose);
+  }
+
+  const htmlClose = lower.lastIndexOf('</html>');
+  if (htmlClose >= 0) {
+    return source.slice(0, htmlClose) + tag + source.slice(htmlClose);
+  }
+
+  return source + tag;
+}
+
 function injectCommander(source) {
   if (source.includes('data-meshcommander-modern-ui="1"')) return source;
 
   const cssTag = '<link rel="stylesheet" href="styles/meshcommander-modern.css" data-meshcommander-modern-ui="1">';
   const jsTag = '<script src="scripts/meshcommander-modern-toggle.js" data-meshcommander-modern-ui="1"></script>';
 
-  let output = source;
-  if (output.includes('</head>')) {
-    output = output.replace('</head>', cssTag + '</head>');
-  } else {
-    fail('Nao foi encontrado </head> no commander.htm. Nenhum arquivo foi alterado.');
-  }
-
-  if (output.includes('</body>')) {
-    output = output.replace('</body>', jsTag + '</body>');
-  } else if (output.includes('</html>')) {
-    output = output.replace('</html>', jsTag + '</html>');
-  } else {
-    fail('Nao foi encontrado </body> ou </html> no commander.htm. Nenhum arquivo foi alterado.');
-  }
-
+  let output = insertHeadAsset(source, cssTag);
+  output = insertBodyAsset(output, jsTag);
   return output;
 }
 
@@ -65,6 +104,10 @@ if (!fs.existsSync(toggleJsSource)) fail('toggle JS nao encontrado: ' + toggleJs
 
 const original = fs.readFileSync(sourceCommander, 'utf8');
 const patched = injectCommander(original);
+
+if (!patched.includes('styles/meshcommander-modern.css') || !patched.includes('scripts/meshcommander-modern-toggle.js')) {
+  fail('Validacao interna falhou: os assets modernos nao foram injetados. Nenhum arquivo foi alterado.');
+}
 
 let targetPublicDir = publicDir;
 let targetCommander;
