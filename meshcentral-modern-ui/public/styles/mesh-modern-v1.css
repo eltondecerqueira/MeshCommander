@@ -1,480 +1,139 @@
-/*
- * MeshCentral Modern UI v1
- * Safe overlay for the existing MeshCentral Modern (default3) interface.
- * Loaded only through domain customFiles scope=["default3"].
- * No protocol, agent, relay, KVM, terminal or file-transfer logic is changed.
- */
-
+/* MeshCentral Modern UI v1.1 — targeted for MeshCentral 1.2.5 default3 */
 body.mc-modern-v1 {
-    --mcm-bg: #f4f7fb;
-    --mcm-surface: #ffffff;
-    --mcm-surface-2: #f8fafc;
-    --mcm-surface-3: #eef3f9;
-    --mcm-sidebar: #0f172a;
-    --mcm-sidebar-2: #172554;
-    --mcm-header: #0b1220;
-    --mcm-border: #dbe4ef;
-    --mcm-border-strong: #cbd7e6;
-    --mcm-text: #172033;
-    --mcm-muted: #64748b;
-    --mcm-primary: #2563eb;
-    --mcm-primary-hover: #1d4ed8;
-    --mcm-primary-soft: #dbeafe;
-    --mcm-success: #15803d;
-    --mcm-warning: #b45309;
-    --mcm-danger: #b91c1c;
-    --mcm-radius: 12px;
-    --mcm-radius-sm: 8px;
-    --mcm-shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 8px 24px rgba(15, 23, 42, .06);
-    --mcm-shadow-lg: 0 18px 48px rgba(15, 23, 42, .14);
-    --mcm-sidebar-width: 78px;
-
-    margin: 0;
-    color: var(--mcm-text);
-    background: var(--mcm-bg);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 13px;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
+  --mcm-bg:#f4f7fb; --mcm-surface:#fff; --mcm-surface-2:#f8fafc; --mcm-border:#dbe4ef;
+  --mcm-text:#172033; --mcm-muted:#64748b; --mcm-primary:#2563eb; --mcm-primary-soft:#dbeafe;
+  --mcm-sidebar:#0f172a; --mcm-sidebar-2:#172554; --mcm-shadow:0 8px 28px rgba(15,23,42,.08);
+  --mcm-radius:14px; --mcm-sidebar-width:220px;
+  margin:0; color:var(--mcm-text); background:var(--mcm-bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
 }
-
-body.mc-modern-v1[data-bs-theme="dark"],
-body.mc-modern-v1.night {
-    --mcm-bg: #0b1120;
-    --mcm-surface: #111827;
-    --mcm-surface-2: #172033;
-    --mcm-surface-3: #1d2939;
-    --mcm-sidebar: #080d18;
-    --mcm-sidebar-2: #111c35;
-    --mcm-header: #080d18;
-    --mcm-border: #27344a;
-    --mcm-border-strong: #334155;
-    --mcm-text: #e5edf8;
-    --mcm-muted: #9aabc2;
-    --mcm-primary: #60a5fa;
-    --mcm-primary-hover: #93c5fd;
-    --mcm-primary-soft: rgba(37, 99, 235, .20);
-    --mcm-success: #4ade80;
-    --mcm-warning: #fbbf24;
-    --mcm-danger: #f87171;
-    --mcm-shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 10px 30px rgba(0, 0, 0, .22);
-    --mcm-shadow-lg: 0 20px 60px rgba(0, 0, 0, .40);
+html[data-bs-theme="dark"] body.mc-modern-v1, body.mc-modern-v1.night {
+  --mcm-bg:#0b1120; --mcm-surface:#111827; --mcm-surface-2:#172033; --mcm-border:#27344a;
+  --mcm-text:#e5edf8; --mcm-muted:#9aabc2; --mcm-primary:#60a5fa; --mcm-primary-soft:rgba(37,99,235,.22);
+  --mcm-sidebar:#080d18; --mcm-sidebar-2:#111c35; --mcm-shadow:0 12px 34px rgba(0,0,0,.28);
 }
-
-/* Preserve native full remote-desktop layout. */
-body.mc-modern-v1.fulldesk {
-    background: #000;
-}
-
-body.mc-modern-v1:not(.fulldesk) #container {
-    background: var(--mcm-bg);
-    border: 0;
-}
-
-body.mc-modern-v1.fullscreen:not(.fulldesk) #container {
-    grid-template-columns: var(--mcm-sidebar-width) minmax(0, 1fr);
+body.mc-modern-v1.fulldesk { background:#000; }
+body.mc-modern-v1:not(.fulldesk) #container { background:var(--mcm-bg)!important; border:0!important; }
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #container {
+  grid-template-columns:var(--mcm-sidebar-width) minmax(0,1fr)!important;
+  -ms-grid-columns:var(--mcm-sidebar-width) 1fr!important;
+  grid-template-rows:72px 48px auto 45px!important;
 }
 
 /* Header */
 body.mc-modern-v1:not(.fulldesk) #masthead {
-    min-height: 64px;
-    height: 64px;
-    box-sizing: border-box;
-    padding: 0 18px;
-    color: #f8fafc;
-    background: linear-gradient(135deg, var(--mcm-header), #14213a 72%, #172554);
-    background-image: none;
-    border-bottom: 1px solid rgba(255, 255, 255, .07);
-    box-shadow: 0 6px 18px rgba(15, 23, 42, .18);
-    z-index: 1050;
+  height:72px!important; min-height:72px!important; padding:0 22px!important;
+  background:#0b1220!important; background-image:none!important; color:#fff!important;
+  border-bottom:1px solid rgba(255,255,255,.08)!important; box-shadow:0 8px 24px rgba(15,23,42,.18)!important;
 }
-
-body.mc-modern-v1:not(.fulldesk) #masthead .title {
-    color: #f8fafc;
-    font-family: inherit;
-    font-size: 25px;
-    line-height: 1.1;
-    font-weight: 700;
-    letter-spacing: -.025em;
-    text-shadow: none;
+html[data-bs-theme="light"] body.mc-modern-v1:not(.fulldesk) #masthead {
+  background:#ffffff!important; color:#0f172a!important; border-bottom:1px solid var(--mcm-border)!important;
+  box-shadow:0 4px 18px rgba(15,23,42,.07)!important;
 }
+body.mc-modern-v1:not(.fulldesk) #masthead .title { font-size:24px!important; font-weight:750!important; letter-spacing:-.025em!important; text-shadow:none!important; color:inherit!important; }
+body.mc-modern-v1:not(.fulldesk) #masthead .title2 { font-size:12px!important; font-weight:500!important; text-shadow:none!important; color:var(--mcm-muted)!important; padding:0!important; }
+body.mc-modern-v1:not(.fulldesk) #userDropdownButton { border-radius:12px!important; padding:7px 10px!important; }
+html[data-bs-theme="light"] body.mc-modern-v1:not(.fulldesk) .LogoffLinkColor { color:#334155!important; }
 
-body.mc-modern-v1:not(.fulldesk) #masthead .title2 {
-    color: #9fb0ca;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 500;
-    text-shadow: none;
+/* Sidebar — now a real navigation rail */
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar {
+  width:var(--mcm-sidebar-width)!important; padding:14px 12px!important; box-sizing:border-box!important;
+  background:linear-gradient(180deg,var(--mcm-sidebar),var(--mcm-sidebar-2))!important;
+  border-right:1px solid rgba(255,255,255,.06)!important; box-shadow:8px 0 26px rgba(15,23,42,.10)!important;
 }
-
-body.mc-modern-v1:not(.fulldesk) #masthead .masthead-right,
-body.mc-modern-v1:not(.fulldesk) #masthead .user-menu-container {
-    gap: 8px;
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar > div:first-child { height:4px!important; }
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar .nav { gap:6px!important; }
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar .nav-link {
+  width:100%!important; min-height:46px!important; margin:0!important; padding:0 14px!important; box-sizing:border-box!important;
+  display:flex!important; align-items:center!important; justify-content:flex-start!important; gap:12px!important;
+  border-radius:12px!important; color:#cbd5e1!important; text-decoration:none!important; opacity:1!important;
+  border:1px solid transparent!important; transition:.15s ease!important;
 }
-
-body.mc-modern-v1:not(.fulldesk) #masthead .notification-icon,
-body.mc-modern-v1:not(.fulldesk) #notificationCount {
-    border-radius: 9px;
-    transition: background .15s ease, transform .15s ease;
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar .nav-link i { width:22px!important; margin:0!important; font-size:17px!important; text-align:center!important; }
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar .nav-link:hover { background:rgba(255,255,255,.08)!important; color:#fff!important; transform:translateX(2px); }
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar .lbbuttonsel,
+body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar .lbbuttonsel2 {
+  background:linear-gradient(135deg,#2563eb,#3b82f6)!important; color:#fff!important;
+  border-color:rgba(147,197,253,.28)!important; box-shadow:0 10px 24px rgba(37,99,235,.26)!important;
 }
+body.mc-modern-v1 .mcm-nav-label { font-size:13px; font-weight:650; white-space:nowrap; }
 
-body.mc-modern-v1:not(.fulldesk) #masthead .notification-icon:hover,
-body.mc-modern-v1:not(.fulldesk) #notificationCount:hover {
-    background: rgba(255, 255, 255, .10);
-}
-
-/* Sidebar */
-body.mc-modern-v1:not(.fulldesk) #page_leftbar {
-    width: var(--mcm-sidebar-width);
-    background: linear-gradient(180deg, var(--mcm-sidebar), var(--mcm-sidebar-2));
-    border-right: 1px solid rgba(255,255,255,.06);
-    box-shadow: 6px 0 20px rgba(15, 23, 42, .08);
-}
-
-body.mc-modern-v1:not(.fulldesk) .lbbutton {
-    width: calc(var(--mcm-sidebar-width) - 12px);
-    min-height: 52px;
-    margin: 5px 6px;
-    border-radius: 11px;
-    border: 1px solid transparent;
-    background: transparent;
-    opacity: .78;
-    transition: background .16s ease, opacity .16s ease, transform .16s ease, border-color .16s ease;
-}
-
-body.mc-modern-v1:not(.fulldesk) .lbbutton:hover {
-    opacity: 1;
-    background: rgba(255,255,255,.08);
-    border-color: rgba(255,255,255,.07);
-    transform: translateY(-1px);
-}
-
-body.mc-modern-v1:not(.fulldesk) .lbbuttonsel,
-body.mc-modern-v1:not(.fulldesk) .lbbuttonsel2 {
-    opacity: 1;
-    background: linear-gradient(135deg, rgba(37,99,235,.92), rgba(59,130,246,.72));
-    border-color: rgba(147,197,253,.32);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, .25);
-}
-
-body.mc-modern-v1:not(.fulldesk) .lbtg {
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,.22));
-}
-
-/* Top navigation / submenus */
-body.mc-modern-v1:not(.fulldesk) #topbar {
-    min-height: 38px;
-    background: var(--mcm-surface);
-    border-bottom: 1px solid var(--mcm-border);
-    box-shadow: 0 2px 10px rgba(15,23,42,.035);
-    z-index: 900;
-}
-
+/* Top navigation */
+body.mc-modern-v1:not(.fulldesk) #topbar { min-height:48px!important; background:var(--mcm-surface)!important; border-bottom:1px solid var(--mcm-border)!important; box-shadow:0 2px 12px rgba(15,23,42,.04)!important; }
+body.mc-modern-v1:not(.fulldesk) #MainMenuSpan,
 body.mc-modern-v1:not(.fulldesk) #MainSubMenuSpan,
 body.mc-modern-v1:not(.fulldesk) #MeshSubMenuSpan,
 body.mc-modern-v1:not(.fulldesk) #EventsSubMenuSpan,
 body.mc-modern-v1:not(.fulldesk) #UserSubMenuSpan,
 body.mc-modern-v1:not(.fulldesk) #UsersSubMenuSpan,
 body.mc-modern-v1:not(.fulldesk) #ServerSubMenuSpan,
-body.mc-modern-v1:not(.fulldesk) #MainMenuSpan,
 body.mc-modern-v1:not(.fulldesk) #MainSubMenu,
 body.mc-modern-v1:not(.fulldesk) #MeshSubMenu,
+body.mc-modern-v1:not(.fulldesk) #EventsSubMenu,
 body.mc-modern-v1:not(.fulldesk) #UserSubMenu,
-body.mc-modern-v1:not(.fulldesk) #ServerSubMenu,
-body.mc-modern-v1:not(.fulldesk) #UserDummyMenu,
-body.mc-modern-v1:not(.fulldesk) #PluginSubMenu {
-    min-height: 38px;
-    height: auto;
-    color: var(--mcm-muted);
-    background: var(--mcm-surface);
-}
+body.mc-modern-v1:not(.fulldesk) #UsersSubMenu,
+body.mc-modern-v1:not(.fulldesk) #ServerSubMenu { min-height:48px!important; height:48px!important; background:var(--mcm-surface)!important; }
+body.mc-modern-v1:not(.fulldesk) .topbar_td { height:48px!important; padding:0 14px!important; color:var(--mcm-muted)!important; font-weight:650!important; border-bottom:2px solid transparent!important; }
+body.mc-modern-v1:not(.fulldesk) .topbar_td:hover { color:var(--mcm-primary)!important; background:var(--mcm-primary-soft)!important; }
+body.mc-modern-v1:not(.fulldesk) .topbar_td.fullselect,
+body.mc-modern-v1:not(.fulldesk) .topbar_td.semiselect,
+body.mc-modern-v1:not(.fulldesk) .topbar_td.style3sel { color:var(--mcm-primary)!important; background:var(--mcm-primary-soft)!important; border-bottom-color:var(--mcm-primary)!important; }
 
-body.mc-modern-v1:not(.fulldesk) .topbar_td {
-    height: 38px;
-    padding: 0 12px;
-    color: var(--mcm-muted);
-    font-weight: 600;
-    transition: color .15s ease, background .15s ease;
+/* Main workspace */
+body.mc-modern-v1:not(.fulldesk) #column_l { padding:22px 24px 30px!important; background:var(--mcm-bg)!important; }
+body.mc-modern-v1:not(.fulldesk) #p1title,
+body.mc-modern-v1:not(.fulldesk) #p10title,
+body.mc-modern-v1:not(.fulldesk) #p11title,
+body.mc-modern-v1:not(.fulldesk) #p12title,
+body.mc-modern-v1:not(.fulldesk) #p13title,
+body.mc-modern-v1:not(.fulldesk) #p14title,
+body.mc-modern-v1:not(.fulldesk) #p15title,
+body.mc-modern-v1:not(.fulldesk) #p16title,
+body.mc-modern-v1:not(.fulldesk) #p17title,
+body.mc-modern-v1:not(.fulldesk) #p18title {
+  margin-bottom:16px!important; padding-bottom:12px!important; border-bottom:1px solid var(--mcm-border)!important;
 }
-
-body.mc-modern-v1:not(.fulldesk) .topbar_td:hover {
-    color: var(--mcm-primary);
-    background: var(--mcm-primary-soft);
-}
-
-/* Main content */
-body.mc-modern-v1:not(.fulldesk) #column_l {
-    box-sizing: border-box;
-    padding: 18px 20px 28px;
-    background: var(--mcm-bg);
-}
-
-body.mc-modern-v1:not(.fulldesk) h1,
-body.mc-modern-v1:not(.fulldesk) h2,
-body.mc-modern-v1:not(.fulldesk) h3,
-body.mc-modern-v1:not(.fulldesk) h4 {
-    color: var(--mcm-text);
-    font-family: inherit;
-    letter-spacing: -.01em;
-}
-
-body.mc-modern-v1:not(.fulldesk) h1 {
-    font-size: 20px;
-    font-weight: 700;
-}
-
-body.mc-modern-v1:not(.fulldesk) h2 {
-    font-size: 16px;
-    font-weight: 700;
-}
-
-/* Bootstrap-like surfaces */
+body.mc-modern-v1:not(.fulldesk) #p1title .fs-4 { font-size:24px!important; letter-spacing:-.025em!important; color:var(--mcm-text)!important; }
 body.mc-modern-v1:not(.fulldesk) .card,
 body.mc-modern-v1:not(.fulldesk) .modal-content,
 body.mc-modern-v1:not(.fulldesk) .dropdown-menu,
-body.mc-modern-v1:not(.fulldesk) .offcanvas,
-body.mc-modern-v1:not(.fulldesk) .list-group-item {
-    color: var(--mcm-text);
-    background: var(--mcm-surface);
-    border-color: var(--mcm-border);
-}
+body.mc-modern-v1:not(.fulldesk) .list-group-item { background:var(--mcm-surface)!important; color:var(--mcm-text)!important; border-color:var(--mcm-border)!important; }
+body.mc-modern-v1:not(.fulldesk) .card { border-radius:var(--mcm-radius)!important; box-shadow:var(--mcm-shadow)!important; }
+body.mc-modern-v1:not(.fulldesk) #devListToolbar,
+body.mc-modern-v1:not(.fulldesk) #kvmListToolbar { padding:12px 14px!important; margin-bottom:14px!important; background:var(--mcm-surface)!important; border:1px solid var(--mcm-border)!important; border-radius:14px!important; box-shadow:var(--mcm-shadow)!important; }
 
-body.mc-modern-v1:not(.fulldesk) .card {
-    border-radius: var(--mcm-radius);
-    box-shadow: var(--mcm-shadow);
-}
-
-body.mc-modern-v1:not(.fulldesk) .card-header,
-body.mc-modern-v1:not(.fulldesk) .card-footer {
-    background: var(--mcm-surface-2);
-    border-color: var(--mcm-border);
-}
-
-body.mc-modern-v1:not(.fulldesk) .modal-content {
-    border: 1px solid var(--mcm-border);
-    border-radius: 14px;
-    box-shadow: var(--mcm-shadow-lg);
-    overflow: hidden;
-}
-
-body.mc-modern-v1:not(.fulldesk) .modal-header,
-body.mc-modern-v1:not(.fulldesk) .modal-footer {
-    border-color: var(--mcm-border);
-}
-
-/* Legacy dialog surfaces */
-body.mc-modern-v1:not(.fulldesk) #dialog,
-body.mc-modern-v1:not(.fulldesk) #dialog2,
-body.mc-modern-v1:not(.fulldesk) #xxdialog,
-body.mc-modern-v1:not(.fulldesk) .dialogbox {
-    border-radius: 14px !important;
-    box-shadow: var(--mcm-shadow-lg) !important;
-}
-
-/* Inputs */
-body.mc-modern-v1:not(.fulldesk) input[type="text"],
-body.mc-modern-v1:not(.fulldesk) input[type="password"],
-body.mc-modern-v1:not(.fulldesk) input[type="search"],
-body.mc-modern-v1:not(.fulldesk) input[type="email"],
-body.mc-modern-v1:not(.fulldesk) input[type="number"],
-body.mc-modern-v1:not(.fulldesk) select,
-body.mc-modern-v1:not(.fulldesk) textarea,
-body.mc-modern-v1:not(.fulldesk) .form-control,
-body.mc-modern-v1:not(.fulldesk) .form-select {
-    color: var(--mcm-text);
-    background-color: var(--mcm-surface);
-    border: 1px solid var(--mcm-border-strong);
-    border-radius: 8px;
-    box-shadow: none;
-    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
-}
-
-body.mc-modern-v1:not(.fulldesk) input:focus,
-body.mc-modern-v1:not(.fulldesk) select:focus,
-body.mc-modern-v1:not(.fulldesk) textarea:focus,
-body.mc-modern-v1:not(.fulldesk) .form-control:focus,
-body.mc-modern-v1:not(.fulldesk) .form-select:focus {
-    border-color: var(--mcm-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, .13);
-    outline: none;
-}
-
-/* Buttons */
+/* Forms, buttons, dialogs */
+body.mc-modern-v1:not(.fulldesk) input[type="text"], body.mc-modern-v1:not(.fulldesk) input[type="password"],
+body.mc-modern-v1:not(.fulldesk) input[type="search"], body.mc-modern-v1:not(.fulldesk) input[type="email"],
+body.mc-modern-v1:not(.fulldesk) input[type="number"], body.mc-modern-v1:not(.fulldesk) select,
+body.mc-modern-v1:not(.fulldesk) textarea, body.mc-modern-v1:not(.fulldesk) .form-control,
+body.mc-modern-v1:not(.fulldesk) .form-select { border-radius:10px!important; border-color:var(--mcm-border)!important; background:var(--mcm-surface)!important; color:var(--mcm-text)!important; box-shadow:none!important; }
+body.mc-modern-v1:not(.fulldesk) .btn,
 body.mc-modern-v1:not(.fulldesk) button,
 body.mc-modern-v1:not(.fulldesk) input[type="button"],
-body.mc-modern-v1:not(.fulldesk) input[type="submit"],
-body.mc-modern-v1:not(.fulldesk) .btn {
-    border-radius: 8px;
-    font-family: inherit;
-    font-weight: 600;
-    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
-}
-
-body.mc-modern-v1:not(.fulldesk) button:hover:not(:disabled),
-body.mc-modern-v1:not(.fulldesk) input[type="button"]:hover:not(:disabled),
-body.mc-modern-v1:not(.fulldesk) input[type="submit"]:hover:not(:disabled),
-body.mc-modern-v1:not(.fulldesk) .btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-}
-
-body.mc-modern-v1:not(.fulldesk) .btn-primary {
-    background: var(--mcm-primary);
-    border-color: var(--mcm-primary);
-    box-shadow: 0 5px 14px rgba(37, 99, 235, .18);
-}
-
-body.mc-modern-v1:not(.fulldesk) .btn-primary:hover {
-    background: var(--mcm-primary-hover);
-    border-color: var(--mcm-primary-hover);
-}
-
-body.mc-modern-v1:not(.fulldesk) .btn-secondary,
-body.mc-modern-v1:not(.fulldesk) .btn-light {
-    color: var(--mcm-text);
-    background: var(--mcm-surface);
-    border-color: var(--mcm-border-strong);
-}
+body.mc-modern-v1:not(.fulldesk) input[type="submit"] { border-radius:10px!important; font-weight:650!important; }
+body.mc-modern-v1:not(.fulldesk) .modal-content { border-radius:16px!important; box-shadow:0 24px 70px rgba(0,0,0,.28)!important; }
+body.mc-modern-v1:not(.fulldesk) .contextMenu,
+body.mc-modern-v1:not(.fulldesk) #uiMenu,
+body.mc-modern-v1:not(.fulldesk) #userDropdownMenu { border-radius:14px!important; box-shadow:0 20px 50px rgba(0,0,0,.22)!important; }
 
 /* Tables */
-body.mc-modern-v1:not(.fulldesk) table {
-    color: var(--mcm-text);
-}
-
-body.mc-modern-v1:not(.fulldesk) .table,
-body.mc-modern-v1:not(.fulldesk) .table-responsive {
-    --bs-table-bg: transparent;
-    --bs-table-color: var(--mcm-text);
-    --bs-table-border-color: var(--mcm-border);
-}
-
-body.mc-modern-v1:not(.fulldesk) .table > :not(caption) > * > * {
-    border-bottom-color: var(--mcm-border);
-}
-
+body.mc-modern-v1:not(.fulldesk) .table { --bs-table-bg:transparent; --bs-table-color:var(--mcm-text); --bs-table-border-color:var(--mcm-border); }
 body.mc-modern-v1:not(.fulldesk) .table thead th,
-body.mc-modern-v1:not(.fulldesk) th {
-    color: var(--mcm-muted);
-    font-weight: 700;
-    background: var(--mcm-surface-2);
-}
+body.mc-modern-v1:not(.fulldesk) th { background:var(--mcm-surface-2)!important; color:var(--mcm-muted)!important; font-weight:700!important; }
 
-body.mc-modern-v1:not(.fulldesk) .table-hover > tbody > tr:hover > *,
-body.mc-modern-v1:not(.fulldesk) tr:hover > td {
-    background-color: rgba(37, 99, 235, .045);
-}
+/* Validation marker */
+body.mc-modern-v1:not(.fulldesk) #mcmModernMarker { position:fixed!important; right:16px!important; bottom:14px!important; z-index:99999!important; padding:7px 11px!important; color:#fff!important; background:#2563eb!important; border:1px solid rgba(255,255,255,.18)!important; border-radius:999px!important; box-shadow:0 10px 24px rgba(37,99,235,.28)!important; font-size:10px!important; font-weight:800!important; letter-spacing:.05em!important; text-transform:uppercase!important; pointer-events:none!important; opacity:.96!important; }
 
-/* Common device-list areas */
-body.mc-modern-v1:not(.fulldesk) #devListToolbar,
-body.mc-modern-v1:not(.fulldesk) #kvmListToolbar,
-body.mc-modern-v1:not(.fulldesk) #devListToolbarSpan {
-    gap: 8px;
-}
+body.mc-modern-v1 * { scrollbar-width:thin; scrollbar-color:#64748b transparent; }
+body.mc-modern-v1 *::-webkit-scrollbar { width:9px; height:9px; }
+body.mc-modern-v1 *::-webkit-scrollbar-thumb { background:#64748b; border:2px solid transparent; background-clip:padding-box; border-radius:999px; }
 
-body.mc-modern-v1:not(.fulldesk) #devListToolbar,
-body.mc-modern-v1:not(.fulldesk) #kvmListToolbar {
-    padding: 10px 12px;
-    margin-bottom: 10px;
-    background: var(--mcm-surface);
-    border: 1px solid var(--mcm-border);
-    border-radius: var(--mcm-radius);
-    box-shadow: var(--mcm-shadow);
-}
-
-/* Badges / status */
-body.mc-modern-v1:not(.fulldesk) .badge {
-    border-radius: 999px;
-    font-weight: 650;
-    letter-spacing: .01em;
-}
-
-body.mc-modern-v1:not(.fulldesk) .alert {
-    border-radius: 10px;
-    border-width: 1px;
-}
-
-/* Context menus */
-body.mc-modern-v1:not(.fulldesk) .contextMenu,
-body.mc-modern-v1:not(.fulldesk) #uiMenu {
-    color: var(--mcm-text);
-    background: var(--mcm-surface);
-    border: 1px solid var(--mcm-border);
-    border-radius: 10px;
-    box-shadow: var(--mcm-shadow-lg);
-    overflow: hidden;
-}
-
-body.mc-modern-v1:not(.fulldesk) .cmtext {
-    padding: 7px 10px;
-    transition: background .12s ease, color .12s ease;
-}
-
-body.mc-modern-v1:not(.fulldesk) .cmtext:hover {
-    color: var(--mcm-primary);
-    background: var(--mcm-primary-soft);
-}
-
-/* Scrollbars */
-body.mc-modern-v1 * {
-    scrollbar-width: thin;
-    scrollbar-color: #9aacbf transparent;
-}
-
-body.mc-modern-v1 *::-webkit-scrollbar {
-    width: 9px;
-    height: 9px;
-}
-
-body.mc-modern-v1 *::-webkit-scrollbar-thumb {
-    background: #9aacbf;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    border-radius: 999px;
-}
-
-body.mc-modern-v1 *::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-/* Small unobtrusive marker so operators can immediately identify the overlay. */
-body.mc-modern-v1:not(.fulldesk) #mcmModernMarker {
-    position: fixed;
-    right: 14px;
-    bottom: 12px;
-    z-index: 9000;
-    padding: 5px 9px;
-    color: var(--mcm-muted);
-    background: color-mix(in srgb, var(--mcm-surface) 92%, transparent);
-    border: 1px solid var(--mcm-border);
-    border-radius: 999px;
-    box-shadow: var(--mcm-shadow);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    pointer-events: none;
-    opacity: .72;
-}
-
-@supports not (background: color-mix(in srgb, white 50%, black)) {
-    body.mc-modern-v1:not(.fulldesk) #mcmModernMarker {
-        background: var(--mcm-surface);
-    }
-}
-
-@media (max-width: 900px) {
-    body.mc-modern-v1 {
-        --mcm-sidebar-width: 70px;
-    }
-
-    body.mc-modern-v1:not(.fulldesk) #column_l {
-        padding: 12px 12px 22px;
-    }
-
-    body.mc-modern-v1:not(.fulldesk) #masthead {
-        padding: 0 12px;
-    }
-
-    body.mc-modern-v1:not(.fulldesk) #masthead .title {
-        font-size: 20px;
-    }
+@media (max-width:1100px) {
+  body.mc-modern-v1 { --mcm-sidebar-width:78px; }
+  body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar { padding:10px 6px!important; }
+  body.mc-modern-v1.fullscreen:not(.fulldesk):not(.menu_stack) #page_leftbar .nav-link { justify-content:center!important; padding:0!important; }
+  body.mc-modern-v1 .mcm-nav-label { display:none!important; }
+  body.mc-modern-v1:not(.fulldesk) #column_l { padding:16px!important; }
 }
