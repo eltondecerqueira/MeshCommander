@@ -1,0 +1,359 @@
+/* MeshCentral Modern UI V6 — native embedded device experience */
+:root {
+  --m6-bg:#07111f;
+  --m6-bg2:#091522;
+  --m6-surface:#0d1a2c;
+  --m6-surface2:#111f33;
+  --m6-surface3:#15263d;
+  --m6-border:#223650;
+  --m6-border2:#315071;
+  --m6-text:#edf5ff;
+  --m6-muted:#8ea5c5;
+  --m6-primary:#2f80ed;
+  --m6-primary2:#1769da;
+  --m6-green:#35d07f;
+  --m6-amber:#ffb020;
+  --m6-red:#ff5d6c;
+  --m6-cyan:#4ed9ff;
+  --m6-radius:10px;
+}
+
+/* Parent shell enhancements: V5 stays the proven structural base. */
+#mcmV5Shell.mcm6-shell-enhanced .mcm5-framewrap,
+#mcmV5Shell.mcm6-shell-enhanced .mcm5-toolframe,
+#mcmV5Shell.mcm6-shell-enhanced .mcm5-section-frame {
+  position:relative;
+}
+#mcmV5Shell.mcm6-shell-enhanced .mcm6-native-ready::after {
+  content:'Nativo integrado';
+  position:absolute;
+  right:10px;
+  bottom:8px;
+  z-index:4;
+  padding:3px 7px;
+  color:#75e4aa;
+  background:rgba(12,43,34,.86);
+  border:1px solid rgba(53,208,127,.32);
+  border-radius:999px;
+  font-size:7px;
+  pointer-events:none;
+  backdrop-filter:blur(8px);
+}
+
+/* Embedded native frame foundation. */
+html[data-mc-modern-native="v6"],
+body.mcm-embedded-native.mcm-native-v6 {
+  color-scheme:dark;
+  background:var(--m6-bg)!important;
+}
+body.mcm-embedded-native.mcm-native-v6 {
+  color:var(--m6-text)!important;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  font-size:12px!important;
+}
+body.mcm-embedded-native.mcm-native-v6 #container,
+body.mcm-embedded-native.mcm-native-v6 #column_l {
+  background:linear-gradient(180deg,var(--m6-bg) 0%,var(--m6-bg2) 100%)!important;
+}
+body.mcm-embedded-native.mcm-native-v6 #column_l {
+  padding:8px!important;
+  overflow:auto!important;
+}
+body.mcm-embedded-native.mcm-native-v6.mcm6-desktop #column_l,
+body.mcm-embedded-native.mcm-native-v6.mcm6-terminal #column_l {
+  padding:6px!important;
+}
+
+/* The active native page becomes a modern full-surface workspace. */
+body.mcm-embedded-native.mcm-native-v6 .mcm6-native-root {
+  min-width:0!important;
+  max-width:none!important;
+  width:100%!important;
+  min-height:calc(100vh - 16px)!important;
+  margin:0!important;
+  color:var(--m6-text)!important;
+  background:var(--m6-surface)!important;
+  border:1px solid var(--m6-border)!important;
+  border-radius:var(--m6-radius)!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.18)!important;
+  overflow:auto!important;
+}
+body.mcm-embedded-native.mcm-native-v6.mcm6-desktop .mcm6-native-root,
+body.mcm-embedded-native.mcm-native-v6.mcm6-terminal .mcm6-native-root {
+  min-height:calc(100vh - 12px)!important;
+}
+
+/* Compact native marker. It is informational only; parent owns actual navigation. */
+#mcm6NativeBadge {
+  position:fixed;
+  top:10px;
+  right:12px;
+  z-index:2147483500;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-height:25px;
+  padding:0 8px;
+  color:#cfe0f6;
+  background:rgba(10,24,40,.84);
+  border:1px solid #29435f;
+  border-radius:999px;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  backdrop-filter:blur(10px);
+  pointer-events:none;
+  font-size:8px;
+}
+#mcm6NativeBadge > span { width:6px; height:6px; border-radius:50%; background:var(--m6-green); box-shadow:0 0 0 3px rgba(53,208,127,.12); }
+#mcm6NativeBadge b { color:#edf6ff; font-size:8px; }
+#mcm6NativeBadge small { color:#7490b2; font-size:7px; }
+
+/* Native headers and toolbars. */
+body.mcm-native-v6 .mcm6-native-root .areaHead,
+body.mcm-native-v6 .mcm6-native-root .areaHead2,
+body.mcm-native-v6 .mcm6-native-root .areaHead3,
+body.mcm-native-v6 .mcm6-native-root .mcm6-native-toolbar,
+body.mcm-native-v6 .mcm6-native-root [class*="toolbar" i],
+body.mcm-native-v6 .mcm6-native-root [class*="head" i]:not(h1):not(h2):not(h3) {
+  color:#dfeeff!important;
+  background:linear-gradient(180deg,#13243a,#0e1d30)!important;
+  border-color:var(--m6-border)!important;
+}
+body.mcm-native-v6 .mcm6-native-root .areaHead,
+body.mcm-native-v6 .mcm6-native-root .areaHead2,
+body.mcm-native-v6 .mcm6-native-root .areaHead3 {
+  min-height:38px!important;
+  padding:6px 10px!important;
+  border-bottom:1px solid var(--m6-border)!important;
+}
+
+/* Buttons: preserve handlers and disabled states, change only appearance. */
+body.mcm-native-v6 .mcm6-native-button,
+body.mcm-native-v6 .mcm6-native-root button,
+body.mcm-native-v6 .mcm6-native-root input[type="button"],
+body.mcm-native-v6 .mcm6-native-root input[type="submit"],
+body.mcm-native-v6 .mcm6-native-root input[type="reset"] {
+  min-height:29px!important;
+  padding:4px 10px!important;
+  color:#dceaff!important;
+  background:#13243a!important;
+  border:1px solid #2d4664!important;
+  border-radius:7px!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+  font-family:inherit!important;
+  font-size:10px!important;
+  font-weight:600!important;
+  cursor:pointer;
+  transition:.15s ease!important;
+}
+body.mcm-native-v6 .mcm6-native-button:hover:not(:disabled),
+body.mcm-native-v6 .mcm6-native-root button:hover:not(:disabled),
+body.mcm-native-v6 .mcm6-native-root input[type="button"]:hover:not(:disabled) {
+  color:white!important;
+  background:#19314e!important;
+  border-color:#42678e!important;
+}
+body.mcm-native-v6 .mcm6-native-root button:disabled,
+body.mcm-native-v6 .mcm6-native-root input:disabled {
+  opacity:.42!important;
+  cursor:not-allowed!important;
+}
+
+/* Form controls. */
+body.mcm-native-v6 .mcm6-native-control,
+body.mcm-native-v6 .mcm6-native-root input[type="text"],
+body.mcm-native-v6 .mcm6-native-root input[type="password"],
+body.mcm-native-v6 .mcm6-native-root input[type="search"],
+body.mcm-native-v6 .mcm6-native-root input[type="number"],
+body.mcm-native-v6 .mcm6-native-root input[type="email"],
+body.mcm-native-v6 .mcm6-native-root textarea,
+body.mcm-native-v6 .mcm6-native-root select {
+  min-height:29px!important;
+  color:#dceaff!important;
+  background:#091726!important;
+  border:1px solid #2a405c!important;
+  border-radius:6px!important;
+  outline:none!important;
+  box-shadow:none!important;
+  font-family:inherit!important;
+  font-size:10px!important;
+}
+body.mcm-native-v6 .mcm6-native-root textarea { padding:7px!important; }
+body.mcm-native-v6 .mcm6-native-root input:focus,
+body.mcm-native-v6 .mcm6-native-root textarea:focus,
+body.mcm-native-v6 .mcm6-native-root select:focus {
+  border-color:#3f8dff!important;
+  box-shadow:0 0 0 2px rgba(47,128,237,.14)!important;
+}
+body.mcm-native-v6 .mcm6-native-root label { color:#b8cbe3!important; }
+
+/* Native tables / inventory / events / files. */
+body.mcm-native-v6 .mcm6-native-table,
+body.mcm-native-v6 .mcm6-native-root table {
+  color:#d6e3f3!important;
+  background:transparent!important;
+  border-color:var(--m6-border)!important;
+}
+body.mcm-native-v6 .mcm6-native-root table th,
+body.mcm-native-v6 .mcm6-native-root table thead td {
+  color:#94acc9!important;
+  background:#101f33!important;
+  border-color:var(--m6-border)!important;
+  font-weight:700!important;
+}
+body.mcm-native-v6 .mcm6-native-root table td {
+  border-color:#1d3049!important;
+}
+body.mcm-native-v6 .mcm6-native-root table tr:nth-child(even) td { background:rgba(255,255,255,.012)!important; }
+body.mcm-native-v6 .mcm6-native-root table tr:hover td { background:#112742!important; }
+body.mcm-native-v6 .mcm6-native-root a { color:#65baff!important; }
+
+/* Generic panels/cards used by Details, Console and administrative sections. */
+body.mcm-native-v6 .mcm6-native-card,
+body.mcm-native-v6 .mcm6-native-root fieldset,
+body.mcm-native-v6 .mcm6-native-root .groupbox,
+body.mcm-native-v6 .mcm6-native-root .panel,
+body.mcm-native-v6 .mcm6-native-root .card {
+  color:#dce9f8!important;
+  background:#0f1e31!important;
+  border:1px solid var(--m6-border)!important;
+  border-radius:9px!important;
+  box-shadow:none!important;
+}
+body.mcm-native-v6 .mcm6-native-root legend { color:#dce9f8!important; padding:0 6px!important; }
+body.mcm-native-v6 .mcm6-native-root hr { border:0!important; border-top:1px solid var(--m6-border)!important; }
+
+/* Tabs and selected states. */
+body.mcm-native-v6 .mcm6-native-root .tab,
+body.mcm-native-v6 .mcm6-native-root .tab2,
+body.mcm-native-v6 .mcm6-native-root .tab3,
+body.mcm-native-v6 .mcm6-native-root [class*="tab" i] {
+  color:#9eb4d1!important;
+  border-color:transparent!important;
+}
+body.mcm-native-v6 .mcm6-native-root .tab:hover,
+body.mcm-native-v6 .mcm6-native-root [class*="tab" i]:hover { color:white!important; }
+body.mcm-native-v6 .mcm6-native-root .tabSel,
+body.mcm-native-v6 .mcm6-native-root .tabselected,
+body.mcm-native-v6 .mcm6-native-root [class*="selected" i] {
+  color:#65baff!important;
+  background:#123b67!important;
+  border-color:#24588d!important;
+}
+
+/* Desktop / KVM. Keep the native canvas sizing logic intact. */
+body.mcm-native-v6.mcm6-desktop .mcm6-native-root {
+  background:#07101b!important;
+  overflow:hidden!important;
+}
+body.mcm-native-v6.mcm6-desktop .mcm6-desktop-area,
+body.mcm-native-v6.mcm6-desktop #deskarea0,
+body.mcm-native-v6.mcm6-desktop #deskarea1,
+body.mcm-native-v6.mcm6-desktop #deskarea2 {
+  color:#dceaff!important;
+  background:#0b1726!important;
+  border-color:#223750!important;
+}
+body.mcm-native-v6.mcm6-desktop .mcm6-desktop-canvas,
+body.mcm-native-v6.mcm6-desktop canvas#Desk {
+  max-width:100%!important;
+  background:#000!important;
+  border:1px solid #243a55!important;
+  border-radius:8px!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.32)!important;
+}
+body.mcm-native-v6.mcm6-desktop .mcm6-floating-panel {
+  color:#e8f2ff!important;
+  background:rgba(10,22,37,.92)!important;
+  border:1px solid #315071!important;
+  border-radius:8px!important;
+  box-shadow:0 14px 36px rgba(0,0,0,.32)!important;
+  backdrop-filter:blur(10px)!important;
+}
+
+/* Terminal. */
+body.mcm-native-v6.mcm6-terminal .mcm6-native-root { overflow:hidden!important; background:#07101a!important; }
+body.mcm-native-v6.mcm6-terminal .mcm6-terminal-surface,
+body.mcm-native-v6.mcm6-terminal .xterm,
+body.mcm-native-v6.mcm6-terminal [class*="terminal" i],
+body.mcm-native-v6.mcm6-terminal pre {
+  color:#d9f6e5!important;
+  background:#050b12!important;
+  border-color:#1c3348!important;
+}
+body.mcm-native-v6.mcm6-terminal .xterm { padding:8px!important; border-radius:7px!important; }
+body.mcm-native-v6.mcm6-terminal .xterm-viewport { background:#050b12!important; }
+
+/* File manager. */
+body.mcm-native-v6.mcm6-files .mcm6-native-root { background:#0b1829!important; }
+body.mcm-native-v6.mcm6-files .mcm6-files-surface { border-color:var(--m6-border)!important; }
+body.mcm-native-v6.mcm6-files [class*="file" i] table,
+body.mcm-native-v6.mcm6-files [id*="file" i] table { width:100%!important; }
+
+/* Warnings / connection states. */
+body.mcm-native-v6 .mcm6-native-warning,
+body.mcm-native-v6 .mcm6-native-root .warningbox,
+body.mcm-native-v6 .mcm6-native-root .warningBox {
+  margin:8px!important;
+  padding:9px 11px!important;
+  color:#ffd87f!important;
+  background:#35280f!important;
+  border:1px solid #6a5220!important;
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+
+/* Native dialogs — power actions remain native; only presentation changes. */
+body.mcm-native-v6 .mcm6-native-dialog,
+body.mcm-native-v6 .modal-content,
+body.mcm-native-v6 [role="dialog"] {
+  color:#eaf3ff!important;
+  background:#0f1e31!important;
+  border:1px solid #315071!important;
+  border-radius:10px!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.48)!important;
+}
+body.mcm-native-v6 .modal-header,
+body.mcm-native-v6 .modal-footer,
+body.mcm-native-v6 [class*="dialog" i] [class*="head" i] {
+  border-color:#243b56!important;
+  background:#12233a!important;
+}
+body.mcm-native-v6 .modal-backdrop,
+body.mcm-native-v6 [class*="backdrop" i] { background:rgba(1,7,14,.72)!important; }
+
+/* Context menus. */
+body.mcm-native-v6 .mcm6-native-menu,
+body.mcm-native-v6 .contextMenu {
+  color:#dceaff!important;
+  background:#0f2034!important;
+  border:1px solid #315071!important;
+  border-radius:8px!important;
+  box-shadow:0 20px 50px rgba(0,0,0,.4)!important;
+  overflow:hidden!important;
+}
+body.mcm-native-v6 .contextMenu > div:hover,
+body.mcm-native-v6 .mcm6-native-menu > div:hover { background:#173557!important; }
+
+/* Preserve fullscreen behavior while removing card chrome. */
+body.mcm-native-v6.fulldesk #column_l,
+body.mcm-native-v6.fulldesk .mcm6-native-root {
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  min-height:100vh!important;
+  background:#000!important;
+}
+body.mcm-native-v6.fulldesk #mcm6NativeBadge { display:none!important; }
+
+/* Scrollbars in embedded tools. */
+body.mcm-native-v6 * { scrollbar-width:thin; scrollbar-color:#456585 transparent; }
+body.mcm-native-v6 *::-webkit-scrollbar { width:8px; height:8px; }
+body.mcm-native-v6 *::-webkit-scrollbar-thumb { background:#456585; border:2px solid transparent; background-clip:padding-box; border-radius:999px; }
+body.mcm-native-v6 *::-webkit-scrollbar-track { background:transparent; }
+
+@media (max-width:900px) {
+  #mcm6NativeBadge small { display:none; }
+  body.mcm-native-v6 .mcm6-native-root { border-radius:7px!important; }
+}
