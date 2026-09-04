@@ -30,19 +30,15 @@ function injectBody(source, tag) {
     if (source.includes('</html>')) return source.replace('</html>', tag + '\n</html>');
     return source + '\n' + tag + '\n';
 }
-function hasAsset(source, rel) {
-    return source.includes(rel);
-}
-function countAsset(source, rel) {
-    return source.split(rel).length - 1;
-}
+function hasAsset(source, rel) { return source.includes(rel); }
+function countAsset(source, rel) { return source.split(rel).length - 1; }
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const rootArg = args.find(x => !x.startsWith('-'));
 if (!rootArg || args.includes('-h') || args.includes('--help')) {
     console.log('Uso: node install.js /caminho/raiz-do-meshcentral [--dry-run]');
-    console.log('V7 = shell V5 + skin nativa V6 + dashboard/service desk V7.');
+    console.log('V8 = V5 workspace + V6 native skin + V7 Service Desk + V8 stabilization/unified UX.');
     console.log('Nao altera config.json, node_modules nem reinicia MeshCentral.');
     process.exit(rootArg ? 0 : 1);
 }
@@ -74,7 +70,9 @@ const assets = [
     { key:'v6-css', kind:'css', rel:'styles/mesh-modern-native-v6.css', tag:'<link rel="stylesheet" href="styles/mesh-modern-native-v6.css" data-mesh-modern-v6-css="1">', min:1000 },
     { key:'v6-js', kind:'js', rel:'scripts/mesh-modern-native-v6.js', tag:'<script src="scripts/mesh-modern-native-v6.js" data-mesh-modern-v6-js="1"></script>', min:1000 },
     { key:'v7-css', kind:'css', rel:'styles/mesh-commandcenter-v7.css', tag:'<link rel="stylesheet" href="styles/mesh-commandcenter-v7.css" data-mesh-modern-v7-css="1">', min:1000 },
-    { key:'v7-js', kind:'js', rel:'scripts/mesh-commandcenter-v7.js', tag:'<script src="scripts/mesh-commandcenter-v7.js" data-mesh-modern-v7-js="1"></script>', min:1000 }
+    { key:'v7-js', kind:'js', rel:'scripts/mesh-commandcenter-v7.js', tag:'<script src="scripts/mesh-commandcenter-v7.js" data-mesh-modern-v7-js="1"></script>', min:1000 },
+    { key:'v8-css', kind:'css', rel:'styles/mesh-commandcenter-v8.css', tag:'<link rel="stylesheet" href="styles/mesh-commandcenter-v8.css" data-mesh-modern-v8-css="1">', min:1000 },
+    { key:'v8-js', kind:'js', rel:'scripts/mesh-commandcenter-v8.js', tag:'<script src="scripts/mesh-commandcenter-v8.js" data-mesh-modern-v8-js="1"></script>', min:1000 }
 ];
 
 assets.forEach(a => {
@@ -89,6 +87,7 @@ assets.forEach(a => {
 if (!assets.find(a => a.key === 'base-js').text.includes("var VERSION = 'v5'")) warn('Base JS nao declara v5.');
 if (!assets.find(a => a.key === 'v6-js').text.includes("var VERSION = 'v6'")) warn('JS V6 nao declara v6.');
 if (!assets.find(a => a.key === 'v7-js').text.includes("var VERSION = 'v7'")) warn('JS V7 nao declara v7.');
+if (!assets.find(a => a.key === 'v8-js').text.includes("var VERSION = 'v8'")) warn('JS V8 nao declara v8.');
 
 const overrideRoot = path.join(root, 'meshcentral-web');
 const overrideViews = path.join(overrideRoot, 'views');
@@ -102,10 +101,6 @@ assets.forEach(a => { a.target = path.join(overridePublic, a.rel); });
 let template = readText(templateTarget) || readText(packageDefault3);
 if (!template) die('Nao foi possivel ler default3.handlebars.');
 
-// IMPORTANT: detect each asset by its own path, not by a shared version marker.
-// Previous V7 used one marker for both CSS and JS; after adding the CSS the JS
-// was incorrectly considered already present. Per-file detection makes this
-// idempotent and also repairs partially injected V5/V6/V7 templates safely.
 const beforeState = {};
 assets.forEach(a => { beforeState[a.key] = hasAsset(template, a.rel); });
 assets.filter(a => a.kind === 'css').forEach(a => {
@@ -114,7 +109,6 @@ assets.filter(a => a.kind === 'css').forEach(a => {
 assets.filter(a => a.kind === 'js').forEach(a => {
     if (!hasAsset(template, a.rel)) template = injectBody(template, a.tag);
 });
-
 assets.forEach(a => {
     const count = countAsset(template, a.rel);
     if (count < 1) die('Falha ao validar injecao de ' + a.rel);
@@ -122,13 +116,13 @@ assets.forEach(a => {
 });
 
 console.log('');
-console.log('MeshCentral Modern UI V7 - preflight OK');
+console.log('MeshCentral Modern UI V8 - preflight OK');
 console.log('Versao MeshCentral: ' + version);
 console.log('Raiz:               ' + root);
 console.log('Override ja ativo:  ' + (overrideWasPresent ? 'sim' : 'nao'));
-console.log('JS V5/V6/V7:        sintaxe OK');
-console.log('CSS V5/V6/V7:       presente');
-console.log('Template V7:        injecao validada');
+console.log('JS V5/V6/V7/V8:     sintaxe OK');
+console.log('CSS V5/V6/V7/V8:    presente');
+console.log('Template V8:         injecao validada');
 console.log('Assets detectados antes do reparo:');
 assets.forEach(a => console.log('  ' + a.key.padEnd(9) + ': ' + (beforeState[a.key] ? 'presente' : 'ausente -> sera injetado')));
 if (dryRun) {
@@ -143,20 +137,21 @@ assets.forEach(a => atomicWrite(a.target, a.text));
 atomicWrite(templateTarget, template);
 
 console.log('');
-console.log('MeshCentral Modern UI V7 - atualizado com sucesso');
+console.log('MeshCentral Modern UI V8 - atualizado com sucesso');
 console.log('Modern override:    ' + templateTarget);
 assets.forEach(a => console.log((a.key + ':').padEnd(20) + a.target));
 backups.forEach(b => { if (b[1]) console.log(('Backup ' + b[0] + ':').padEnd(20) + b[1]); });
 console.log('');
 console.log('Nenhum arquivo dentro de node_modules foi alterado.');
 console.log('O config.json nao foi alterado. Classic permanece original.');
-console.log('V5 continua sendo o workspace; V6 moderniza ferramentas nativas; V7 adiciona top-nav, dashboards e Automation Lab.');
+console.log('V8 adiciona landing na Central de Operacoes, busca funcional, estabilizacao de device state, tipografia/paleta suave e dialog/editor integrado.');
 console.log('');
 if (overrideWasPresent) {
     console.log('NAO reinicie o servidor por esta atualizacao. Use Ctrl+Shift+R com cache desabilitado.');
 } else {
     console.log('Primeira ativacao do meshcentral-web: um restart controlado pode ser necessario.');
 }
-console.log('Rollback V7 -> V6: execute o install.js da branch feature/meshcentral-modern-ui-v6.');
+console.log('Rollback V8 -> V7: execute o install.js da branch feature/meshcentral-modern-ui-v7.');
+console.log('Rollback V8 -> V6: execute o install.js da branch feature/meshcentral-modern-ui-v6.');
 console.log('Rollback total: UI Settings -> Classic.');
 console.log('');
