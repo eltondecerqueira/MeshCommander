@@ -30,6 +30,12 @@ function injectBody(source, tag) {
     if (source.includes('</html>')) return source.replace('</html>', tag + '\n</html>');
     return source + '\n' + tag + '\n';
 }
+function hasAsset(source, rel) {
+    return source.includes(rel);
+}
+function countAsset(source, rel) {
+    return source.split(rel).length - 1;
+}
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
@@ -63,12 +69,12 @@ if (!hasViewsOverride || !hasPublicOverride) die('MeshCentral ' + version + ' na
 
 const sourceRoot = __dirname;
 const assets = [
-    { key:'base-css', kind:'css', rel:'styles/mesh-modern-v1.css', marker:'data-mesh-modern-v1="1"', tag:'<link rel="stylesheet" href="styles/mesh-modern-v1.css" data-mesh-modern-v1="1">', min:500 },
-    { key:'base-js', kind:'js', rel:'scripts/mesh-modern-v1.js', marker:'data-mesh-modern-v1="1"', tag:'<script src="scripts/mesh-modern-v1.js" data-mesh-modern-v1="1"></script>', min:1000 },
-    { key:'v6-css', kind:'css', rel:'styles/mesh-modern-native-v6.css', marker:'data-mesh-modern-v6="1"', tag:'<link rel="stylesheet" href="styles/mesh-modern-native-v6.css" data-mesh-modern-v6="1">', min:1000 },
-    { key:'v6-js', kind:'js', rel:'scripts/mesh-modern-native-v6.js', marker:'data-mesh-modern-v6="1"', tag:'<script src="scripts/mesh-modern-native-v6.js" data-mesh-modern-v6="1"></script>', min:1000 },
-    { key:'v7-css', kind:'css', rel:'styles/mesh-commandcenter-v7.css', marker:'data-mesh-modern-v7="1"', tag:'<link rel="stylesheet" href="styles/mesh-commandcenter-v7.css" data-mesh-modern-v7="1">', min:1000 },
-    { key:'v7-js', kind:'js', rel:'scripts/mesh-commandcenter-v7.js', marker:'data-mesh-modern-v7="1"', tag:'<script src="scripts/mesh-commandcenter-v7.js" data-mesh-modern-v7="1"></script>', min:1000 }
+    { key:'base-css', kind:'css', rel:'styles/mesh-modern-v1.css', tag:'<link rel="stylesheet" href="styles/mesh-modern-v1.css" data-mesh-modern-v1-css="1">', min:500 },
+    { key:'base-js', kind:'js', rel:'scripts/mesh-modern-v1.js', tag:'<script src="scripts/mesh-modern-v1.js" data-mesh-modern-v1-js="1"></script>', min:1000 },
+    { key:'v6-css', kind:'css', rel:'styles/mesh-modern-native-v6.css', tag:'<link rel="stylesheet" href="styles/mesh-modern-native-v6.css" data-mesh-modern-v6-css="1">', min:1000 },
+    { key:'v6-js', kind:'js', rel:'scripts/mesh-modern-native-v6.js', tag:'<script src="scripts/mesh-modern-native-v6.js" data-mesh-modern-v6-js="1"></script>', min:1000 },
+    { key:'v7-css', kind:'css', rel:'styles/mesh-commandcenter-v7.css', tag:'<link rel="stylesheet" href="styles/mesh-commandcenter-v7.css" data-mesh-modern-v7-css="1">', min:1000 },
+    { key:'v7-js', kind:'js', rel:'scripts/mesh-commandcenter-v7.js', tag:'<script src="scripts/mesh-commandcenter-v7.js" data-mesh-modern-v7-js="1"></script>', min:1000 }
 ];
 
 assets.forEach(a => {
@@ -96,10 +102,24 @@ assets.forEach(a => { a.target = path.join(overridePublic, a.rel); });
 let template = readText(templateTarget) || readText(packageDefault3);
 if (!template) die('Nao foi possivel ler default3.handlebars.');
 
-// Inject CSS in dependency order, then JavaScript in dependency order.
-assets.filter(a => a.kind === 'css').forEach(a => { if (!template.includes(a.marker)) template = injectHead(template, a.tag); });
-assets.filter(a => a.kind === 'js').forEach(a => { if (!template.includes(a.marker)) template = injectBody(template, a.tag); });
-assets.forEach(a => { if (!template.includes(a.rel)) die('Falha ao validar injecao de ' + a.rel); });
+// IMPORTANT: detect each asset by its own path, not by a shared version marker.
+// Previous V7 used one marker for both CSS and JS; after adding the CSS the JS
+// was incorrectly considered already present. Per-file detection makes this
+// idempotent and also repairs partially injected V5/V6/V7 templates safely.
+const beforeState = {};
+assets.forEach(a => { beforeState[a.key] = hasAsset(template, a.rel); });
+assets.filter(a => a.kind === 'css').forEach(a => {
+    if (!hasAsset(template, a.rel)) template = injectHead(template, a.tag);
+});
+assets.filter(a => a.kind === 'js').forEach(a => {
+    if (!hasAsset(template, a.rel)) template = injectBody(template, a.tag);
+});
+
+assets.forEach(a => {
+    const count = countAsset(template, a.rel);
+    if (count < 1) die('Falha ao validar injecao de ' + a.rel);
+    if (count > 1) warn('Template contem ' + count + ' referencias a ' + a.rel + '. Nenhuma duplicata nova sera criada.');
+});
 
 console.log('');
 console.log('MeshCentral Modern UI V7 - preflight OK');
@@ -109,6 +129,8 @@ console.log('Override ja ativo:  ' + (overrideWasPresent ? 'sim' : 'nao'));
 console.log('JS V5/V6/V7:        sintaxe OK');
 console.log('CSS V5/V6/V7:       presente');
 console.log('Template V7:        injecao validada');
+console.log('Assets detectados antes do reparo:');
+assets.forEach(a => console.log('  ' + a.key.padEnd(9) + ': ' + (beforeState[a.key] ? 'presente' : 'ausente -> sera injetado')));
 if (dryRun) {
     console.log('Modo dry-run: nenhum arquivo foi alterado.');
     process.exit(0);
