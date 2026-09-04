@@ -8,15 +8,9 @@ function die(message) {
     console.error('\nERROR: ' + message + '\n');
     process.exit(1);
 }
-
-function warn(message) {
-    console.warn('AVISO: ' + message);
-}
-
-function ensureDir(dir) {
-    fs.mkdirSync(dir, { recursive: true });
-}
-
+function warn(message) { console.warn('AVISO: ' + message); }
+function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
+function readText(file) { try { return fs.readFileSync(file, 'utf8'); } catch (e) { return null; } }
 function backupIfExists(file) {
     if (!fs.existsSync(file)) return null;
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -24,34 +18,24 @@ function backupIfExists(file) {
     fs.copyFileSync(file, backup);
     return backup;
 }
-
-function readText(file) {
-    try { return fs.readFileSync(file, 'utf8'); } catch (e) { return null; }
+function atomicWrite(file, content) {
+    const tmp = file + '.tmp-' + process.pid + '-' + Date.now();
+    fs.writeFileSync(tmp, content, 'utf8');
+    fs.renameSync(tmp, file);
 }
-
 function injectTemplate(source) {
     const marker = 'data-mesh-modern-v1="1"';
     if (source.includes(marker)) return source;
-
     const cssTag = '<link rel="stylesheet" href="styles/mesh-modern-v1.css" data-mesh-modern-v1="1">';
     const jsTag = '<script src="scripts/mesh-modern-v1.js" data-mesh-modern-v1="1"></script>';
-
     let output = source;
-    if (output.includes('</head>')) {
-        output = output.replace('</head>', '    ' + cssTag + '\n</head>');
-    } else if (output.includes('<body')) {
-        output = output.replace('<body', cssTag + '\n<body');
-    } else {
-        die('Nao foi possivel localizar um ponto seguro para inserir o CSS em default3.handlebars. Nada foi alterado.');
-    }
+    if (output.includes('</head>')) output = output.replace('</head>', '    ' + cssTag + '\n</head>');
+    else if (output.includes('<body')) output = output.replace('<body', cssTag + '\n<body');
+    else die('Nao foi possivel localizar um ponto seguro para inserir o CSS em default3.handlebars. Nada foi alterado.');
 
-    if (output.includes('</body>')) {
-        output = output.replace('</body>', '    ' + jsTag + '\n</body>');
-    } else if (output.includes('</html>')) {
-        output = output.replace('</html>', jsTag + '\n</html>');
-    } else {
-        output += '\n' + jsTag + '\n';
-    }
+    if (output.includes('</body>')) output = output.replace('</body>', '    ' + jsTag + '\n</body>');
+    else if (output.includes('</html>')) output = output.replace('</html>', jsTag + '\n</html>');
+    else output += '\n' + jsTag + '\n';
 
     if (!output.includes('styles/mesh-modern-v1.css') || !output.includes('scripts/mesh-modern-v1.js')) {
         die('Validacao interna falhou ao injetar CSS/JS em default3.handlebars. Nada foi alterado.');
@@ -59,17 +43,18 @@ function injectTemplate(source) {
     return output;
 }
 
-const arg = process.argv[2];
-if (!arg || arg === '-h' || arg === '--help') {
-    console.log('Uso: node install.js /caminho/raiz-do-meshcentral');
+const args = process.argv.slice(2);
+const dryRun = args.includes('--dry-run');
+const rootArg = args.find(x => !x.startsWith('-'));
+if (!rootArg || args.includes('-h') || args.includes('--help')) {
+    console.log('Uso: node install.js /caminho/raiz-do-meshcentral [--dry-run]');
     console.log('');
-    console.log('A raiz deve conter node_modules/meshcentral.');
-    console.log('O instalador cria um override SOMENTE da UI Modern em meshcentral-web/views/default3.handlebars.');
-    console.log('Ele NAO altera config.json, NAO altera node_modules e NAO reinicia o MeshCentral.');
-    process.exit(arg ? 0 : 1);
+    console.log('Valida a UI antes de escrever, cria backups e usa gravacao atomica.');
+    console.log('Nao altera config.json, nao altera node_modules e nao reinicia MeshCentral.');
+    process.exit(rootArg ? 0 : 1);
 }
 
-const root = path.resolve(arg);
+const root = path.resolve(rootArg);
 const packageDir = path.join(root, 'node_modules', 'meshcentral');
 const packagePublic = path.join(packageDir, 'public');
 const packageViews = path.join(packageDir, 'views');
@@ -92,15 +77,21 @@ const meshcentralText = readText(meshcentralJs);
 if (!meshcentralText) die('Nao foi possivel ler meshcentral.js.');
 const hasViewsOverride = meshcentralText.includes('meshcentral-web/views') || meshcentralText.includes("'../../meshcentral-web/views'") || meshcentralText.includes('webViewsOverridePath');
 const hasPublicOverride = meshcentralText.includes('meshcentral-web/public') || meshcentralText.includes("'../../meshcentral-web/public'") || meshcentralText.includes('webPublicOverridePath');
-if (!hasViewsOverride || !hasPublicOverride) {
-    die('Esta versao do MeshCentral (' + version + ') nao expõe o mecanismo meshcentral-web/views + public esperado. Nada foi alterado.');
-}
+if (!hasViewsOverride || !hasPublicOverride) die('Esta versao do MeshCentral (' + version + ') nao expoe o mecanismo meshcentral-web/views + public esperado. Nada foi alterado.');
 
 const sourceRoot = __dirname;
 const cssSource = path.join(sourceRoot, 'public', 'styles', 'mesh-modern-v1.css');
 const jsSource = path.join(sourceRoot, 'public', 'scripts', 'mesh-modern-v1.js');
 if (!fs.existsSync(cssSource)) die('CSS do tema nao encontrado: ' + cssSource);
 if (!fs.existsSync(jsSource)) die('JS do tema nao encontrado: ' + jsSource);
+
+const cssText = readText(cssSource);
+const jsText = readText(jsSource);
+if (!cssText || cssText.length < 500) die('CSS da UI parece vazio ou incompleto. Nada foi alterado.');
+if (!jsText || jsText.length < 1000) die('JavaScript da UI parece vazio ou incompleto. Nada foi alterado.');
+try { new Function(jsText); } catch (e) { die('JavaScript da UI possui erro de sintaxe: ' + e.message + '. Nada foi alterado.'); }
+if (!jsText.includes("var VERSION = 'v5'")) warn('O JavaScript nao declara explicitamente VERSION v5. Revise antes de promover.');
+if (!cssText.includes('mcmV5Shell')) warn('O CSS nao contem o seletor mcmV5Shell esperado.');
 
 const overrideWebRoot = path.join(root, 'meshcentral-web');
 const overrideViews = path.join(overrideWebRoot, 'views');
@@ -110,49 +101,54 @@ const scriptsDir = path.join(overridePublic, 'scripts');
 const default3Target = path.join(overrideViews, 'default3.handlebars');
 const cssTarget = path.join(stylesDir, 'mesh-modern-v1.css');
 const jsTarget = path.join(scriptsDir, 'mesh-modern-v1.js');
-
-ensureDir(overrideViews);
-ensureDir(stylesDir);
-ensureDir(scriptsDir);
+const overrideWasPresent = fs.existsSync(default3Target) && fs.existsSync(cssTarget) && fs.existsSync(jsTarget);
 
 const existingOverride = readText(default3Target);
 const templateSource = existingOverride || readText(packageDefault3);
 if (!templateSource) die('Nao foi possivel ler default3.handlebars.');
 const patchedTemplate = injectTemplate(templateSource);
 
+console.log('');
+console.log('MeshCentral Modern UI V5 - preflight OK');
+console.log('Versao MeshCentral: ' + version);
+console.log('Raiz:               ' + root);
+console.log('Override ja ativo:  ' + (overrideWasPresent ? 'sim' : 'nao'));
+console.log('JS validado:        sintaxe OK');
+console.log('CSS validado:       arquivo presente');
+if (dryRun) {
+    console.log('Modo dry-run: nenhum arquivo foi alterado.');
+    process.exit(0);
+}
+
+ensureDir(overrideViews);
+ensureDir(stylesDir);
+ensureDir(scriptsDir);
 const templateBackup = backupIfExists(default3Target);
 const cssBackup = backupIfExists(cssTarget);
 const jsBackup = backupIfExists(jsTarget);
 
-fs.copyFileSync(cssSource, cssTarget);
-fs.copyFileSync(jsSource, jsTarget);
-
-const tmpTemplate = default3Target + '.tmp-' + process.pid;
-fs.writeFileSync(tmpTemplate, patchedTemplate, 'utf8');
-fs.renameSync(tmpTemplate, default3Target);
+atomicWrite(cssTarget, cssText);
+atomicWrite(jsTarget, jsText);
+atomicWrite(default3Target, patchedTemplate);
 
 console.log('');
-console.log('MeshCentral Modern UI v1 - override instalado com sucesso');
-console.log('Versao MeshCentral: ' + version);
-console.log('Raiz:               ' + root);
-console.log('Pacote original:     ' + packageDir);
-console.log('Modern original:     ' + packageDefault3);
-console.log('Modern override:     ' + default3Target);
-console.log('CSS override:        ' + cssTarget);
-console.log('JS override:         ' + jsTarget);
-if (templateBackup) console.log('Backup template:     ' + templateBackup);
-if (cssBackup) console.log('Backup CSS:          ' + cssBackup);
-if (jsBackup) console.log('Backup JS:           ' + jsBackup);
+console.log('MeshCentral Modern UI V5 - override atualizado com sucesso');
+console.log('Modern override:    ' + default3Target);
+console.log('CSS override:       ' + cssTarget);
+console.log('JS override:        ' + jsTarget);
+if (templateBackup) console.log('Backup template:    ' + templateBackup);
+if (cssBackup) console.log('Backup CSS:         ' + cssBackup);
+if (jsBackup) console.log('Backup JS:          ' + jsBackup);
 console.log('');
 console.log('Nenhum arquivo dentro de node_modules foi alterado.');
 console.log('O config.json nao foi alterado.');
-console.log('Classic permanece original. Somente default3 (Modern) recebeu o overlay.');
+console.log('Classic permanece original.');
 console.log('');
-console.log('PROXIMO PASSO: faça um unico restart controlado do processo MeshCentral');
-console.log('para que meshcentral-web/views e meshcentral-web/public sejam detectados.');
-console.log('Antes do restart, confirme o gerenciador com:');
-console.log("  ps -eo pid,user,cmd | grep -i '[m]eshcentral'");
-console.log('');
-console.log('Depois do restart: UI Settings -> Modern.');
+if (overrideWasPresent) {
+    console.log('Como meshcentral-web ja estava ativo, NAO reinicie o servidor apenas por esta atualizacao.');
+    console.log('No navegador use F12 > Network > Disable cache e Ctrl+Shift+R.');
+} else {
+    console.log('Primeira ativacao do meshcentral-web detectada. Um unico restart controlado pode ser necessario.');
+}
 console.log('Rollback imediato: UI Settings -> Classic.');
 console.log('');
